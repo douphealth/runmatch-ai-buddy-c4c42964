@@ -1,8 +1,9 @@
+import { useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
-import { QuizStep, QuizAnswers } from '@/lib/quiz-data';
+import { QuizStep, QuizAnswers, popularBrands } from '@/lib/quiz-data';
 import { Slider } from '@/components/ui/slider';
-import { Check } from 'lucide-react';
-const footAnalysis = '/images/foot-analysis.jpg';
+import { Input } from '@/components/ui/input';
+import { Check, Search, X } from 'lucide-react';
 
 interface QuizStepContentProps {
   step: QuizStep;
@@ -11,46 +12,59 @@ interface QuizStepContentProps {
   handleMultiSelect: (stepId: string, value: string) => void;
 }
 
-const stepImages: Record<string, string> = {
-  footType: footAnalysis,
-};
-
 const QuizStepContent = ({ step, answers, setAnswer, handleMultiSelect }: QuizStepContentProps) => {
+  const [brandSearch, setBrandSearch] = useState('');
+
+  const filteredBrands = useMemo(() => {
+    if (!brandSearch) return popularBrands;
+    return popularBrands.filter(b => b.toLowerCase().includes(brandSearch.toLowerCase()));
+  }, [brandSearch]);
+
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
-      transition: { staggerChildren: 0.06 },
+      transition: { staggerChildren: 0.05, delayChildren: 0.1 },
     },
   };
 
   const itemVariants = {
-    hidden: { opacity: 0, y: 15, scale: 0.97 },
-    show: { opacity: 1, y: 0, scale: 1 },
+    hidden: { opacity: 0, y: 20, scale: 0.95 },
+    show: { opacity: 1, y: 0, scale: 1, transition: { type: 'spring' as const, stiffness: 300, damping: 25 } },
   };
 
   return (
     <div>
-      {/* Step image (when available) */}
-      {stepImages[step.id] && (
+      {/* Step Image */}
+      {step.image && (
         <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="mb-6 rounded-2xl overflow-hidden border border-border/50 max-w-[280px] mx-auto"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="mb-6 -mx-4 md:mx-0"
         >
-          <img
-            src={stepImages[step.id]}
-            alt={step.title}
-            className="w-full h-auto object-cover"
-            loading="lazy"
-            width={800}
-            height={600}
-          />
+          <div className="relative rounded-none md:rounded-2xl overflow-hidden h-[140px] md:h-[180px]">
+            <img
+              src={step.image}
+              alt={step.title}
+              className="w-full h-full object-cover"
+              loading="lazy"
+              width={800}
+              height={512}
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+            {/* Step number overlay */}
+            <div className="absolute bottom-3 left-4 md:left-5">
+              <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary/80">
+                Step {(['footType','pronation','weeklyMileage','distance','terrain','paceGoal','injuries','brand','budget'].indexOf(step.id) + 1)} of 9
+              </span>
+            </div>
+          </div>
         </motion.div>
       )}
 
       {/* Title */}
-      <div className="mb-8">
+      <div className="mb-6 md:mb-8">
         <h2 className="text-2xl md:text-4xl font-bold uppercase tracking-tight mb-2 leading-tight">
           {step.title}
         </h2>
@@ -58,26 +72,31 @@ const QuizStepContent = ({ step, answers, setAnswer, handleMultiSelect }: QuizSt
           {step.subtitle}
         </p>
         {step.type === 'multi' && (
-          <span className="inline-block mt-2 text-xs text-primary font-medium uppercase tracking-wider">
+          <motion.span
+            initial={{ opacity: 0, x: -10 }}
+            animate={{ opacity: 1, x: 0 }}
+            className="inline-flex items-center gap-1.5 mt-3 text-xs text-primary font-semibold uppercase tracking-wider bg-primary/10 px-3 py-1.5 rounded-full"
+          >
+            <Check className="w-3 h-3" />
             Select all that apply
-          </span>
+          </motion.span>
         )}
       </div>
 
       {/* Slider */}
       {step.type === 'slider' && step.sliderConfig && (
-        <div className="space-y-8">
-          <div className="text-center py-6">
-            <div className="inline-flex items-baseline gap-1">
+        <div className="space-y-6">
+          <div className="text-center py-4">
+            <div className="glass rounded-2xl inline-flex items-baseline gap-1 px-8 py-5">
               <motion.span
                 key={answers.weeklyMileage}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="text-6xl md:text-7xl font-bold text-gradient tabular-nums"
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="text-5xl md:text-7xl font-bold text-gradient tabular-nums"
               >
                 {answers.weeklyMileage}
               </motion.span>
-              <span className="text-xl md:text-2xl text-muted-foreground ml-2 font-light">
+              <span className="text-lg md:text-2xl text-muted-foreground ml-2 font-light">
                 {step.sliderConfig.unit}/week
               </span>
             </div>
@@ -97,10 +116,126 @@ const QuizStepContent = ({ step, answers, setAnswer, handleMultiSelect }: QuizSt
               {step.sliderConfig.labels.map(l => <span key={l}>{l}</span>)}
             </div>
           )}
+          {/* Quick mileage category */}
+          <div className="flex justify-center gap-2 mt-2">
+            {[
+              { label: 'Beginner', val: 15 },
+              { label: 'Intermediate', val: 40 },
+              { label: 'Advanced', val: 70 },
+              { label: 'Elite', val: 100 },
+            ].map(preset => (
+              <button
+                key={preset.label}
+                onClick={() => setAnswer('weeklyMileage', preset.val)}
+                className={`text-[10px] md:text-xs px-3 py-1.5 rounded-full border transition-all ${
+                  answers.weeklyMileage === preset.val
+                    ? 'border-primary bg-primary/10 text-primary'
+                    : 'border-border/50 text-muted-foreground hover:border-muted-foreground/50'
+                }`}
+              >
+                {preset.label}
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
-      {/* Options */}
+      {/* Brand Input */}
+      {step.type === 'brand-input' && (
+        <div className="space-y-4">
+          {/* Search input */}
+          <div className="relative">
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              value={answers.brand === 'no-preference' ? '' : (brandSearch || answers.brand)}
+              onChange={(e) => {
+                setBrandSearch(e.target.value);
+                setAnswer('brand', e.target.value);
+              }}
+              placeholder="Type any brand name..."
+              className="pl-11 h-12 md:h-14 text-base bg-card/50 border-border/50 rounded-xl focus:border-primary"
+            />
+            {answers.brand && answers.brand !== 'no-preference' && (
+              <button
+                onClick={() => { setBrandSearch(''); setAnswer('brand', ''); }}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
+          </div>
+
+          {/* No preference button */}
+          <motion.button
+            whileHover={{ scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            onClick={() => { setBrandSearch(''); setAnswer('brand', 'no-preference'); }}
+            className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
+              answers.brand === 'no-preference'
+                ? 'border-primary bg-primary/10 glow-primary-sm'
+                : 'border-border/50 bg-card/50 hover:border-muted-foreground/30'
+            }`}
+          >
+            <div className="flex items-center gap-3">
+              <span className="text-xl">🌐</span>
+              <div>
+                <span className="font-semibold text-sm">No Preference</span>
+                <span className="block text-xs text-muted-foreground">We'll recommend based on fit, not brand</span>
+              </div>
+              {answers.brand === 'no-preference' && (
+                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="ml-auto w-5 h-5 rounded-full bg-primary flex items-center justify-center">
+                  <Check className="w-3 h-3 text-primary-foreground" />
+                </motion.div>
+              )}
+            </div>
+          </motion.button>
+
+          {/* Popular brands grid */}
+          <div>
+            <p className="text-xs text-muted-foreground uppercase tracking-wider mb-3 font-medium">
+              {brandSearch ? `Results for "${brandSearch}"` : 'Popular brands'}
+            </p>
+            <motion.div
+              variants={containerVariants}
+              initial="hidden"
+              animate="show"
+              className="grid grid-cols-3 sm:grid-cols-4 gap-2"
+            >
+              {filteredBrands.slice(0, 12).map(brand => {
+                const isSelected = answers.brand.toLowerCase() === brand.toLowerCase();
+                return (
+                  <motion.button
+                    key={brand}
+                    variants={itemVariants}
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    onClick={() => { setBrandSearch(''); setAnswer('brand', brand.toLowerCase()); }}
+                    className={`relative p-3 rounded-xl border transition-all text-center ${
+                      isSelected
+                        ? 'border-primary bg-primary/10 glow-primary-sm'
+                        : 'border-border/50 bg-card/30 hover:border-muted-foreground/30 hover:bg-card/60'
+                    }`}
+                  >
+                    {isSelected && (
+                      <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute top-1.5 right-1.5 w-4 h-4 rounded-full bg-primary flex items-center justify-center">
+                        <Check className="w-2.5 h-2.5 text-primary-foreground" />
+                      </motion.div>
+                    )}
+                    <span className="font-semibold text-xs md:text-sm">{brand}</span>
+                  </motion.button>
+                );
+              })}
+            </motion.div>
+            {brandSearch && filteredBrands.length === 0 && (
+              <p className="text-center text-sm text-muted-foreground mt-4 py-4 glass rounded-xl">
+                No matches found — we'll use "<span className="text-primary font-medium">{brandSearch}</span>" as your preference
+              </p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Options (single & multi) */}
       {(step.type === 'single' || step.type === 'multi') && step.options && (
         <motion.div
           variants={containerVariants}
@@ -128,33 +263,37 @@ const QuizStepContent = ({ step, answers, setAnswer, handleMultiSelect }: QuizSt
                     setAnswer(step.id, option.value);
                   }
                 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                className={`relative flex flex-col items-start p-4 md:p-5 rounded-2xl border-2 transition-all text-left group ${
+                whileHover={{ scale: 1.03, y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                className={`relative flex flex-col items-start p-4 md:p-5 rounded-2xl border-2 transition-all text-left group overflow-hidden ${
                   isSelected
                     ? 'border-primary bg-primary/10 glow-primary-sm'
-                    : 'border-border/50 bg-card/50 hover:border-muted-foreground/30 hover:bg-card/80'
+                    : 'border-border/50 bg-card/40 hover:border-muted-foreground/30 hover:bg-card/70'
                 }`}
               >
+                {/* Shimmer on selected */}
+                {isSelected && <div className="absolute inset-0 shimmer pointer-events-none" />}
+
                 {/* Selected check */}
                 {isSelected && (
                   <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="absolute top-3 right-3 w-5 h-5 rounded-full bg-primary flex items-center justify-center"
+                    initial={{ scale: 0, rotate: -180 }}
+                    animate={{ scale: 1, rotate: 0 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 25 }}
+                    className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/30"
                   >
-                    <Check className="w-3 h-3 text-primary-foreground" />
+                    <Check className="w-3.5 h-3.5 text-primary-foreground" />
                   </motion.div>
                 )}
 
                 {option.icon && (
-                  <span className="text-2xl mb-2 group-hover:scale-110 transition-transform">
+                  <span className="text-2xl md:text-3xl mb-2 group-hover:scale-110 transition-transform duration-300">
                     {option.icon}
                   </span>
                 )}
-                <span className="font-semibold text-sm md:text-base">{option.label}</span>
+                <span className="font-bold text-sm md:text-base">{option.label}</span>
                 {option.description && (
-                  <span className="text-xs text-muted-foreground mt-1 leading-relaxed">
+                  <span className="text-[11px] md:text-xs text-muted-foreground mt-1 leading-relaxed">
                     {option.description}
                   </span>
                 )}
