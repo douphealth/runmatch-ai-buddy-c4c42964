@@ -87,7 +87,7 @@ export const quizSteps: QuizStep[] = [
   {
     id: 'injuries',
     title: 'INJURY HISTORY',
-    subtitle: 'Select any injuries you've experienced. This affects our recommendation.',
+    subtitle: "Select any injuries you've experienced. This affects our recommendation.",
     type: 'multi',
     options: [
       { value: 'plantar-fasciitis', label: 'Plantar Fasciitis', icon: '🦶' },
