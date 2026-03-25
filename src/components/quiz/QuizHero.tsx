@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { ArrowRight, Zap, Shield, RotateCcw, Target } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import heroImage from '@/assets/hero-shoes.jpg';
+const heroImage = '/images/hero-shoes.jpg';
 
 interface QuizHeroProps {
   onStart: () => void;

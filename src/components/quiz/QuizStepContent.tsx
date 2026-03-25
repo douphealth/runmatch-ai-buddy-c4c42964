@@ -2,7 +2,7 @@ import { motion } from 'framer-motion';
 import { QuizStep, QuizAnswers } from '@/lib/quiz-data';
 import { Slider } from '@/components/ui/slider';
 import { Check } from 'lucide-react';
-import footAnalysis from '@/assets/foot-analysis.jpg';
+const footAnalysis = '/images/foot-analysis.jpg';
 
 interface QuizStepContentProps {
   step: QuizStep;
