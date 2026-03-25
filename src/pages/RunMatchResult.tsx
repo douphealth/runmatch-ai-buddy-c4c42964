@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import { ArrowLeft, ExternalLink, BookOpen, Star, RotateCcw, Target, CheckCircle, Share2, Zap, ArrowRight, Shield } from 'lucide-react';
-import resultHero from '@/assets/result-hero.jpg';
+const resultHero = '/images/result-hero.jpg';
 
 const GEARUP_LINKS = {
   choose: { url: 'https://gearuptofit.com/running/how-to-choose-the-right-running-shoes/', label: 'How to Choose the Right Running Shoes', icon: '📖', desc: 'Expert guide to finding your perfect fit' },
