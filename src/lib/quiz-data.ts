@@ -9,17 +9,19 @@ export interface QuizStep {
   id: string;
   title: string;
   subtitle: string;
-  type: 'single' | 'multi' | 'slider';
+  type: 'single' | 'multi' | 'slider' | 'brand-input';
   options?: QuizOption[];
   sliderConfig?: { min: number; max: number; step: number; unit: string; labels?: string[] };
+  image?: string;
 }
 
 export const quizSteps: QuizStep[] = [
   {
     id: 'footType',
-    title: 'WHAT IS YOUR FOOT TYPE?',
+    title: 'What is your foot type?',
     subtitle: 'This helps us determine the right support and fit for you.',
     type: 'single',
+    image: '/images/foot-analysis.jpg',
     options: [
       { value: 'neutral', label: 'Neutral', description: 'Normal arch height', icon: '🦶' },
       { value: 'flat', label: 'Flat', description: 'Low or no arch', icon: '📏' },
@@ -29,42 +31,46 @@ export const quizSteps: QuizStep[] = [
   },
   {
     id: 'pronation',
-    title: 'HOW DO YOU PRONATE?',
+    title: 'How do you pronate?',
     subtitle: 'Check the wear pattern on your current shoes if unsure.',
     type: 'single',
+    image: '/images/step-pronation.jpg',
     options: [
-      { value: 'neutral', label: 'Neutral', description: 'Even wear pattern' },
-      { value: 'overpronation', label: 'Overpronation', description: 'Inward roll — inner edge wear' },
-      { value: 'underpronation', label: 'Underpronation', description: 'Outward roll — outer edge wear' },
-      { value: 'unsure', label: 'Not Sure', description: "We'll factor this in carefully" },
+      { value: 'neutral', label: 'Neutral', description: 'Even wear pattern', icon: '✅' },
+      { value: 'overpronation', label: 'Overpronation', description: 'Inward roll — inner edge wear', icon: '↙️' },
+      { value: 'underpronation', label: 'Underpronation', description: 'Outward roll — outer edge wear', icon: '↗️' },
+      { value: 'unsure', label: 'Not Sure', description: "We'll factor this in carefully", icon: '🤔' },
     ],
   },
   {
     id: 'weeklyMileage',
-    title: 'WEEKLY MILEAGE',
+    title: 'Weekly mileage',
     subtitle: 'How many kilometers do you run per week on average?',
     type: 'slider',
+    image: '/images/step-mileage.jpg',
     sliderConfig: { min: 0, max: 120, step: 5, unit: 'km', labels: ['0 km', '30 km', '60 km', '90 km', '120+ km'] },
   },
   {
     id: 'distance',
-    title: 'PREFERRED RACE DISTANCE',
+    title: 'Preferred race distance',
     subtitle: 'What distance do you train for most often?',
     type: 'single',
+    image: '/images/step-distance.jpg',
     options: [
-      { value: '5k', label: '5K', icon: '🏃' },
-      { value: '10k', label: '10K', icon: '🏃‍♂️' },
-      { value: 'half-marathon', label: 'Half Marathon', icon: '🏅' },
-      { value: 'marathon', label: 'Marathon', icon: '🏆' },
-      { value: 'ultra', label: 'Ultra', icon: '⛰️' },
-      { value: 'mixed', label: 'Mixed', icon: '🔄' },
+      { value: '5k', label: '5K', icon: '🏃', description: 'Speed focus' },
+      { value: '10k', label: '10K', icon: '🏃‍♂️', description: 'Speed + endurance' },
+      { value: 'half-marathon', label: 'Half Marathon', icon: '🏅', description: '21.1 km' },
+      { value: 'marathon', label: 'Marathon', icon: '🏆', description: '42.2 km' },
+      { value: 'ultra', label: 'Ultra', icon: '⛰️', description: '50K+' },
+      { value: 'mixed', label: 'Mixed', icon: '🔄', description: 'Various distances' },
     ],
   },
   {
     id: 'terrain',
-    title: 'PRIMARY TERRAIN',
+    title: 'Primary terrain',
     subtitle: 'Where do you do most of your running?',
     type: 'single',
+    image: '/images/step-terrain.jpg',
     options: [
       { value: 'road', label: 'Road', description: 'Pavement & sidewalks', icon: '🛣️' },
       { value: 'trail', label: 'Trail', description: 'Dirt, rocks, roots', icon: '🌲' },
@@ -74,21 +80,23 @@ export const quizSteps: QuizStep[] = [
   },
   {
     id: 'paceGoal',
-    title: 'PACE GOAL',
+    title: 'Pace goal',
     subtitle: 'What kind of training intensity are you targeting?',
     type: 'single',
+    image: '/images/step-pace.jpg',
     options: [
-      { value: 'easy', label: 'Easy / Recovery', description: 'Comfortable conversational pace' },
-      { value: 'moderate', label: 'Moderate', description: 'Steady aerobic effort' },
-      { value: 'tempo', label: 'Tempo', description: 'Comfortably hard threshold' },
-      { value: 'race', label: 'Race Pace', description: 'All-out competitive effort' },
+      { value: 'easy', label: 'Easy / Recovery', description: 'Comfortable conversational pace', icon: '🧘' },
+      { value: 'moderate', label: 'Moderate', description: 'Steady aerobic effort', icon: '💪' },
+      { value: 'tempo', label: 'Tempo', description: 'Comfortably hard threshold', icon: '🔥' },
+      { value: 'race', label: 'Race Pace', description: 'All-out competitive effort', icon: '⚡' },
     ],
   },
   {
     id: 'injuries',
-    title: 'INJURY HISTORY',
+    title: 'Injury history',
     subtitle: "Select any injuries you've experienced. This affects our recommendation.",
     type: 'multi',
+    image: '/images/step-injury.jpg',
     options: [
       { value: 'plantar-fasciitis', label: 'Plantar Fasciitis', icon: '🦶' },
       { value: 'shin-splints', label: 'Shin Splints', icon: '🦴' },
@@ -100,31 +108,31 @@ export const quizSteps: QuizStep[] = [
   },
   {
     id: 'brand',
-    title: 'BRAND PREFERENCE',
-    subtitle: "Any brand you lean toward? We'll factor this into the match.",
-    type: 'single',
-    options: [
-      { value: 'nike', label: 'Nike' },
-      { value: 'asics', label: 'Asics' },
-      { value: 'brooks', label: 'Brooks' },
-      { value: 'hoka', label: 'Hoka' },
-      { value: 'new-balance', label: 'New Balance' },
-      { value: 'saucony', label: 'Saucony' },
-      { value: 'no-preference', label: 'No Preference' },
-    ],
+    title: 'Brand preference',
+    subtitle: "Type any running shoe brand you prefer, or skip if you have no preference.",
+    type: 'brand-input',
+    image: '/images/step-brand.jpg',
   },
   {
     id: 'budget',
-    title: 'BUDGET RANGE',
+    title: 'Budget range',
     subtitle: 'What are you looking to spend on your next pair?',
     type: 'single',
+    image: '/images/step-budget.jpg',
     options: [
-      { value: 'under-100', label: 'Under $100', description: 'Budget-friendly picks' },
-      { value: '100-150', label: '$100 – $150', description: 'Mid-range sweet spot' },
-      { value: '150-200', label: '$150 – $200', description: 'Premium performance' },
-      { value: '200-plus', label: '$200+', description: 'Top-tier technology' },
+      { value: 'under-100', label: 'Under $100', description: 'Budget-friendly picks', icon: '💵' },
+      { value: '100-150', label: '$100 – $150', description: 'Mid-range sweet spot', icon: '💰' },
+      { value: '150-200', label: '$150 – $200', description: 'Premium performance', icon: '💎' },
+      { value: '200-plus', label: '$200+', description: 'Top-tier technology', icon: '👑' },
     ],
   },
+];
+
+export const popularBrands = [
+  'Nike', 'Adidas', 'Asics', 'Brooks', 'Hoka', 'New Balance', 'Saucony',
+  'Mizuno', 'On', 'Altra', 'Puma', 'Reebok', 'Under Armour', 'Salomon',
+  'Merrell', 'Inov-8', 'Topo Athletic', 'Newton', 'La Sportiva', 'Craft',
+  'Diadora', 'Karhu', 'Zoot', '361 Degrees', 'Vibram', 'Xero Shoes',
 ];
 
 export interface QuizAnswers {

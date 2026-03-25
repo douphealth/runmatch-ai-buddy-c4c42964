@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowLeft, ArrowRight, Zap } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Zap, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface QuizNavigationProps {
@@ -16,23 +16,33 @@ const QuizNavigation = ({ onBack, onNext, canProceed, isLast }: QuizNavigationPr
         <Button
           variant="ghost"
           onClick={onBack}
-          className="gap-2 text-muted-foreground hover:text-foreground"
+          className="gap-2 text-muted-foreground hover:text-foreground rounded-xl"
         >
           <ArrowLeft className="w-4 h-4" /> Back
         </Button>
 
-        <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
+        <motion.div whileHover={{ scale: canProceed ? 1.03 : 1 }} whileTap={{ scale: canProceed ? 0.97 : 1 }}>
           <Button
             onClick={onNext}
             disabled={!canProceed}
-            className={`gap-2 px-8 md:px-10 font-bold uppercase tracking-[0.1em] rounded-xl transition-all ${
+            className={`gap-2 font-bold uppercase tracking-[0.1em] rounded-xl transition-all ${
               isLast
-                ? 'bg-gradient-primary glow-primary h-12 text-base'
-                : 'bg-primary hover:bg-primary/90 h-11'
+                ? 'bg-gradient-primary glow-primary h-13 md:h-14 px-8 md:px-12 text-base animate-pulse-glow'
+                : 'bg-primary hover:bg-primary/90 h-11 md:h-12 px-6 md:px-10'
             }`}
           >
-            {isLast ? 'Get My Match' : 'Next'}
-            {isLast ? <Zap className="w-4 h-4" /> : <ArrowRight className="w-4 h-4" />}
+            {isLast ? (
+              <>
+                <Sparkles className="w-4 h-4" />
+                Get My Match
+                <Zap className="w-4 h-4" />
+              </>
+            ) : (
+              <>
+                Next
+                <ArrowRight className="w-4 h-4" />
+              </>
+            )}
           </Button>
         </motion.div>
       </div>
