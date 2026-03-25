@@ -101,7 +101,7 @@ export const quizSteps: QuizStep[] = [
   {
     id: 'brand',
     title: 'BRAND PREFERENCE',
-    subtitle: 'Any brand you lean toward? We'll factor this into the match.',
+    subtitle: "Any brand you lean toward? We'll factor this into the match.",
     type: 'single',
     options: [
       { value: 'nike', label: 'Nike' },
