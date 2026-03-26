@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { ArrowRight, Zap, Shield, RotateCcw, Target, ChevronDown } from 'lucide-react';
+import { ArrowRight, Shield, RotateCcw, Target, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface QuizHeroProps {
