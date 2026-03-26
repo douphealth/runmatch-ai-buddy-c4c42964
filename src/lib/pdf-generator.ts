@@ -2,7 +2,7 @@ import jsPDF from 'jspdf';
 import { QuizAnswers } from './quiz-data';
 import { ShoeRecommendation } from './recommendation-engine';
 import { ScoredShoe } from './scoring-engine';
-import { getRecommendedArticles, getInjuryArticles } from './article-links';
+import { getRecommendedArticles, getInjuryArticles, getToolLinks } from './article-links';
 
 interface PDFData {
   answers: QuizAnswers;
@@ -15,626 +15,779 @@ interface PDFData {
   radarData: { axis: string; value: number }[];
 }
 
-const COLORS = {
-  brand: [200, 40, 40] as [number, number, number],
-  brandLight: [230, 80, 80] as [number, number, number],
-  dark: [20, 22, 28] as [number, number, number],
-  cardBg: [28, 31, 40] as [number, number, number],
-  cardBorder: [45, 48, 58] as [number, number, number],
-  white: [255, 255, 255] as [number, number, number],
-  textPrimary: [240, 240, 245] as [number, number, number],
-  textSecondary: [140, 145, 165] as [number, number, number],
-  textMuted: [100, 105, 125] as [number, number, number],
-  accent: [255, 180, 50] as [number, number, number],
-  green: [50, 200, 120] as [number, number, number],
+// ─── Clean white + red accent palette ───
+const C = {
+  red: [200, 30, 30] as const,
+  redLight: [220, 50, 50] as const,
+  redBg: [255, 240, 240] as const,
+  dark: [30, 30, 35] as const,
+  text: [40, 40, 50] as const,
+  textLight: [100, 105, 115] as const,
+  textMuted: [140, 145, 155] as const,
+  white: [255, 255, 255] as const,
+  bg: [250, 250, 252] as const,
+  cardBg: [255, 255, 255] as const,
+  border: [220, 222, 228] as const,
+  green: [25, 160, 80] as const,
+  greenBg: [235, 250, 240] as const,
+  blue: [30, 100, 200] as const,
+  blueBg: [235, 245, 255] as const,
+  purple: [100, 60, 180] as const,
+  purpleBg: [245, 240, 255] as const,
+  accent: [230, 160, 30] as const,
+  accentBg: [255, 248, 230] as const,
 };
 
-const PAGE_W = 210;
-const PAGE_H = 297;
-const MARGIN = 16;
-const CONTENT_W = PAGE_W - MARGIN * 2;
+type RGB = readonly [number, number, number];
 
-function roundedRect(doc: jsPDF, x: number, y: number, w: number, h: number, r: number, fill: [number, number, number], stroke?: [number, number, number]) {
-  doc.setFillColor(...fill);
+const PW = 210;
+const PH = 297;
+const M = 16;
+const CW = PW - M * 2;
+
+// ─── Helpers ───
+
+function rr(doc: jsPDF, x: number, y: number, w: number, h: number, r: number, fill: RGB, stroke?: RGB) {
+  doc.setFillColor(fill[0], fill[1], fill[2]);
   if (stroke) {
-    doc.setDrawColor(...stroke);
-    doc.setLineWidth(0.3);
+    doc.setDrawColor(stroke[0], stroke[1], stroke[2]);
+    doc.setLineWidth(0.4);
   }
-  // @ts-ignore - roundedRect exists in jsPDF
-  if (typeof doc.roundedRect === 'function') {
-    // @ts-ignore
-    doc.roundedRect(x, y, w, h, r, r, stroke ? 'FD' : 'F');
+  if (typeof (doc as any).roundedRect === 'function') {
+    (doc as any).roundedRect(x, y, w, h, r, r, stroke ? 'FD' : 'F');
   } else {
     doc.rect(x, y, w, h, stroke ? 'FD' : 'F');
   }
 }
 
-function drawRadarChart(doc: jsPDF, cx: number, cy: number, radius: number, data: { axis: string; value: number }[]) {
-  const n = data.length;
-  const angleStep = (2 * Math.PI) / n;
-  const startAngle = -Math.PI / 2;
+function pill(doc: jsPDF, x: number, y: number, text: string, bg: RGB, fg: RGB) {
+  const tw = doc.getTextWidth(text) + 6;
+  rr(doc, x, y, tw, 6, 3, bg);
+  doc.setFontSize(5.5);
+  doc.setTextColor(fg[0], fg[1], fg[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.text(text, x + 3, y + 4.2);
+  return tw;
+}
 
-  // Draw grid circles
+function sectionTitle(doc: jsPDF, y: number, title: string, color: RGB = C.red): number {
+  doc.setFillColor(color[0], color[1], color[2]);
+  doc.rect(M, y, 3, 8, 'F');
+  doc.setFontSize(11);
+  doc.setTextColor(C.dark[0], C.dark[1], C.dark[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.text(title, M + 7, y + 6);
+  return y + 12;
+}
+
+function labelValue(doc: jsPDF, x: number, y: number, label: string, value: string, maxW: number = 35) {
+  doc.setFontSize(5.5);
+  doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
+  doc.setFont('helvetica', 'normal');
+  doc.text(label, x, y);
+  doc.setFontSize(7.5);
+  doc.setTextColor(C.dark[0], C.dark[1], C.dark[2]);
+  doc.setFont('helvetica', 'bold');
+  const val = value.length > 22 ? value.slice(0, 22) + '...' : value;
+  doc.text(val, x, y + 4.5);
+}
+
+function link(doc: jsPDF, x: number, y: number, text: string, url: string, size: number = 6.5) {
+  doc.setFontSize(size);
+  doc.setTextColor(C.red[0], C.red[1], C.red[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.textWithLink(text, x, y, { url });
+}
+
+function drawRadar(doc: jsPDF, cx: number, cy: number, radius: number, data: { axis: string; value: number }[]) {
+  const n = data.length;
+  const step = (2 * Math.PI) / n;
+  const start = -Math.PI / 2;
+
+  // Grid rings
   for (let ring = 1; ring <= 5; ring++) {
     const r = (radius * ring) / 5;
-    doc.setDrawColor(55, 58, 68);
+    doc.setDrawColor(C.border[0], C.border[1], C.border[2]);
     doc.setLineWidth(0.15);
-    const points: [number, number][] = [];
+    const pts: [number, number][] = [];
     for (let i = 0; i <= n; i++) {
-      const angle = startAngle + (i % n) * angleStep;
-      points.push([cx + r * Math.cos(angle), cy + r * Math.sin(angle)]);
+      const a = start + (i % n) * step;
+      pts.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]);
     }
-    for (let i = 0; i < points.length - 1; i++) {
-      doc.line(points[i][0], points[i][1], points[i + 1][0], points[i + 1][1]);
+    for (let i = 0; i < pts.length - 1; i++) {
+      doc.line(pts[i][0], pts[i][1], pts[i + 1][0], pts[i + 1][1]);
     }
   }
 
-  // Draw axes
+  // Axes
   for (let i = 0; i < n; i++) {
-    const angle = startAngle + i * angleStep;
-    doc.setDrawColor(55, 58, 68);
+    const a = start + i * step;
+    doc.setDrawColor(C.border[0], C.border[1], C.border[2]);
     doc.setLineWidth(0.15);
-    doc.line(cx, cy, cx + radius * Math.cos(angle), cy + radius * Math.sin(angle));
+    doc.line(cx, cy, cx + radius * Math.cos(a), cy + radius * Math.sin(a));
   }
 
-  // Draw data polygon fill
-  const dataPoints: [number, number][] = [];
+  // Data polygon
+  const dp: [number, number][] = [];
   for (let i = 0; i < n; i++) {
-    const angle = startAngle + i * angleStep;
+    const a = start + i * step;
     const r = (radius * data[i].value) / 10;
-    dataPoints.push([cx + r * Math.cos(angle), cy + r * Math.sin(angle)]);
+    dp.push([cx + r * Math.cos(a), cy + r * Math.sin(a)]);
   }
 
-  // Fill polygon
-  doc.setFillColor(200, 40, 40);
-  doc.setGState(new (doc as any).GState({ opacity: 0.2 }));
-  const pathData = dataPoints.map((p, i) => (i === 0 ? `${p[0]} ${p[1]} m` : `${p[0]} ${p[1]} l`)).join(' ');
-  // Fallback: draw filled lines
-  doc.setGState(new (doc as any).GState({ opacity: 1 }));
-
-  // Draw data polygon outline
-  doc.setDrawColor(220, 60, 60);
-  doc.setLineWidth(0.6);
-  for (let i = 0; i < dataPoints.length; i++) {
-    const next = (i + 1) % dataPoints.length;
-    doc.line(dataPoints[i][0], dataPoints[i][1], dataPoints[next][0], dataPoints[next][1]);
+  // Outline
+  doc.setDrawColor(C.red[0], C.red[1], C.red[2]);
+  doc.setLineWidth(0.7);
+  for (let i = 0; i < dp.length; i++) {
+    const next = (i + 1) % dp.length;
+    doc.line(dp[i][0], dp[i][1], dp[next][0], dp[next][1]);
   }
 
-  // Draw data points
-  for (const p of dataPoints) {
-    doc.setFillColor(220, 60, 60);
-    doc.circle(p[0], p[1], 1.2, 'F');
+  // Points
+  for (const p of dp) {
+    doc.setFillColor(C.red[0], C.red[1], C.red[2]);
+    doc.circle(p[0], p[1], 1.3, 'F');
     doc.setFillColor(255, 255, 255);
-    doc.circle(p[0], p[1], 0.5, 'F');
+    doc.circle(p[0], p[1], 0.6, 'F');
   }
 
   // Labels
   doc.setFontSize(6.5);
-  doc.setTextColor(...COLORS.textSecondary);
+  doc.setFont('helvetica', 'bold');
   for (let i = 0; i < n; i++) {
-    const angle = startAngle + i * angleStep;
-    const labelR = radius + 6;
-    const lx = cx + labelR * Math.cos(angle);
-    const ly = cy + labelR * Math.sin(angle);
-    const align = Math.abs(Math.cos(angle)) < 0.3 ? 'center' : Math.cos(angle) > 0 ? 'left' : 'right';
+    const a = start + i * step;
+    const lr = radius + 7;
+    const lx = cx + lr * Math.cos(a);
+    const ly = cy + lr * Math.sin(a);
+    const align = Math.abs(Math.cos(a)) < 0.3 ? 'center' : Math.cos(a) > 0 ? 'left' : 'right';
+    doc.setTextColor(C.text[0], C.text[1], C.text[2]);
     doc.text(data[i].axis, lx, ly + 1, { align: align as any });
+    // Value
+    doc.setFontSize(5);
+    doc.setTextColor(C.red[0], C.red[1], C.red[2]);
+    doc.text(`${data[i].value}/10`, lx, ly + 4.5, { align: align as any });
+    doc.setFontSize(6.5);
   }
 }
 
-function addPageBackground(doc: jsPDF) {
-  doc.setFillColor(...COLORS.dark);
-  doc.rect(0, 0, PAGE_W, PAGE_H, 'F');
+// ─── Page chrome ───
+
+async function addLogo(doc: jsPDF, y: number): Promise<number> {
+  try {
+    const response = await fetch('/images/gearuptofit-logo.png');
+    const blob = await response.blob();
+    const reader = new FileReader();
+    return new Promise((resolve) => {
+      reader.onloadend = () => {
+        try {
+          doc.addImage(reader.result as string, 'PNG', M, y, 28, 28);
+          resolve(y);
+        } catch {
+          resolve(y);
+        }
+      };
+      reader.readAsDataURL(blob);
+    });
+  } catch {
+    return y;
+  }
 }
 
 function addHeader(doc: jsPDF) {
-  // Top accent bar
-  doc.setFillColor(...COLORS.brand);
-  doc.rect(0, 0, PAGE_W, 3, 'F');
+  // Top red line
+  doc.setFillColor(C.red[0], C.red[1], C.red[2]);
+  doc.rect(0, 0, PW, 2.5, 'F');
 
-  // Brand
+  // Brand text (logo loaded async separately)
   doc.setFontSize(8);
-  doc.setTextColor(...COLORS.brand);
+  doc.setTextColor(C.red[0], C.red[1], C.red[2]);
   doc.setFont('helvetica', 'bold');
-  doc.text('GEAR UP TO FIT', MARGIN, 12);
-
-  doc.setFontSize(6);
-  doc.setTextColor(...COLORS.textMuted);
-  doc.setFont('helvetica', 'normal');
-  doc.text('gearuptofit.com', MARGIN, 16);
-
-  // RunMatch AI badge
-  doc.setFontSize(7);
-  doc.setTextColor(...COLORS.brand);
-  doc.setFont('helvetica', 'bold');
-  doc.text('RUNMATCH AI', PAGE_W - MARGIN, 12, { align: 'right' });
+  doc.text('GEAR UP TO FIT', M, 11);
 
   doc.setFontSize(5.5);
-  doc.setTextColor(...COLORS.textMuted);
+  doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
   doc.setFont('helvetica', 'normal');
-  doc.text('Personalized Running Shoe Report', PAGE_W - MARGIN, 16, { align: 'right' });
+  doc.textWithLink('gearuptofit.com', M, 15, { url: 'https://gearuptofit.com/' });
+
+  // Right side
+  doc.setFontSize(7);
+  doc.setTextColor(C.red[0], C.red[1], C.red[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.text('RUNMATCH AI', PW - M, 11, { align: 'right' });
+
+  doc.setFontSize(5.5);
+  doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Personalized Running Shoe Report', PW - M, 15, { align: 'right' });
 
   // Separator
-  doc.setDrawColor(...COLORS.cardBorder);
+  doc.setDrawColor(C.border[0], C.border[1], C.border[2]);
+  doc.setLineWidth(0.4);
+  doc.line(M, 19, PW - M, 19);
+}
+
+function addFooter(doc: jsPDF, page: number, total: number) {
+  doc.setDrawColor(C.border[0], C.border[1], C.border[2]);
   doc.setLineWidth(0.3);
-  doc.line(MARGIN, 20, PAGE_W - MARGIN, 20);
-}
+  doc.line(M, PH - 16, PW - M, PH - 16);
 
-function addFooter(doc: jsPDF, pageNum: number, totalPages: number) {
-  doc.setDrawColor(...COLORS.cardBorder);
-  doc.setLineWidth(0.2);
-  doc.line(MARGIN, PAGE_H - 14, PAGE_W - MARGIN, PAGE_H - 14);
-
-  doc.setFontSize(5.5);
-  doc.setTextColor(...COLORS.textMuted);
+  doc.setFontSize(5);
+  doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
   doc.setFont('helvetica', 'normal');
-  doc.text('Generated by RunMatch AI — gearuptofit.com', MARGIN, PAGE_H - 9);
-  doc.text(`Page ${pageNum} of ${totalPages}`, PAGE_W - MARGIN, PAGE_H - 9, { align: 'right' });
+  doc.text('Generated by RunMatch AI  |  gearuptofit.com  |  Gear Up. Show Up. Level Up.', M, PH - 11);
+  doc.text(`Page ${page} of ${total}`, PW - M, PH - 11, { align: 'right' });
 
-  // Bottom accent bar
-  doc.setFillColor(...COLORS.brand);
-  doc.rect(0, PAGE_H - 3, PAGE_W, 3, 'F');
+  doc.setFontSize(4.5);
+  doc.text('Some links on this page are affiliate links. GearUpToFit may earn a commission at no extra cost to you.', M, PH - 7);
+
+  // Bottom red line
+  doc.setFillColor(C.red[0], C.red[1], C.red[2]);
+  doc.rect(0, PH - 2.5, PW, 2.5, 'F');
 }
 
-export function generateResultsPDF(data: PDFData) {
+function amazonLink(brand: string, model: string): string {
+  return `https://www.amazon.com/s?k=${encodeURIComponent(`${brand} ${model} running shoes`)}&tag=papalex-20`;
+}
+
+// ─── Main generator ───
+
+export async function generateResultsPDF(data: PDFData) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
   const { answers, recommendation: rec, rotation, radarData } = data;
+  const totalPages = 4;
 
-  const totalPages = 3;
+  // Load logo as base64
+  let logoData: string | null = null;
+  try {
+    const resp = await fetch('/images/gearuptofit-logo.png');
+    const blob = await resp.blob();
+    logoData = await new Promise<string>((resolve) => {
+      const r = new FileReader();
+      r.onloadend = () => resolve(r.result as string);
+      r.readAsDataURL(blob);
+    });
+  } catch { /* no logo fallback */ }
 
-  // ========================
-  // PAGE 1: Profile + Match
-  // ========================
-  addPageBackground(doc);
+  // ═══════════════════════════════════════
+  // PAGE 1: Profile + Primary Match
+  // ═══════════════════════════════════════
   addHeader(doc);
+  let y = 24;
 
-  let y = 28;
+  // Logo + Title block
+  if (logoData) {
+    try { doc.addImage(logoData, 'PNG', M, y, 18, 18); } catch {}
+  }
 
-  // Title
-  doc.setFontSize(20);
-  doc.setTextColor(...COLORS.white);
+  doc.setFontSize(22);
+  doc.setTextColor(C.dark[0], C.dark[1], C.dark[2]);
   doc.setFont('helvetica', 'bold');
-  doc.text('YOUR RUNNING SHOE', MARGIN, y);
-  y += 8;
-  doc.setTextColor(...COLORS.brand);
-  doc.text('MATCH REPORT', MARGIN, y);
-  y += 10;
+  doc.text('YOUR RUNNING SHOE', M + 22, y + 8);
+  doc.setTextColor(C.red[0], C.red[1], C.red[2]);
+  doc.text('MATCH REPORT', M + 22, y + 16);
+  y += 22;
 
-  // Summary line
-  doc.setFontSize(7.5);
-  doc.setTextColor(...COLORS.textSecondary);
+  // Date
+  doc.setFontSize(6);
+  doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
   doc.setFont('helvetica', 'normal');
-  const summaryLines = doc.splitTextToSize(rec.shoeProfile.summary, CONTENT_W);
-  doc.text(summaryLines, MARGIN, y);
-  y += summaryLines.length * 3.5 + 6;
+  doc.text(`Generated ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, M, y + 2);
+  y += 6;
 
-  // ---- Runner Profile Card ----
-  roundedRect(doc, MARGIN, y, CONTENT_W, 70, 3, COLORS.cardBg, COLORS.cardBorder);
+  // Summary
+  doc.setFontSize(7.5);
+  doc.setTextColor(C.text[0], C.text[1], C.text[2]);
+  doc.setFont('helvetica', 'normal');
+  const sumLines = doc.splitTextToSize(rec.shoeProfile.summary, CW);
+  doc.text(sumLines, M, y);
+  y += sumLines.length * 3.5 + 5;
 
-  doc.setFontSize(9);
-  doc.setTextColor(...COLORS.brand);
-  doc.setFont('helvetica', 'bold');
-  doc.text('YOUR RUNNER PROFILE', MARGIN + 6, y + 8);
+  // ── Runner Profile Card ──
+  rr(doc, M, y, CW, 72, 3, C.cardBg, C.border);
+  y = sectionTitle(doc, y + 4, 'YOUR RUNNER PROFILE');
 
-  // Stats grid (left side)
-  const statsData = [
-    { label: 'CATEGORY', value: rec.shoeProfile.category },
-    { label: 'CUSHIONING', value: rec.shoeProfile.cushioning },
-    { label: 'DROP RANGE', value: rec.shoeProfile.dropRange },
-    { label: 'SUPPORT', value: rec.shoeProfile.supportType },
-    { label: 'WEEKLY KM', value: `${answers.weeklyMileage} km/wk` },
-    { label: 'TERRAIN', value: answers.terrain.charAt(0).toUpperCase() + answers.terrain.slice(1) },
+  // Stats grid (left 2 columns)
+  const stats = [
+    { l: 'SHOE CATEGORY', v: rec.shoeProfile.category },
+    { l: 'CUSHIONING', v: rec.shoeProfile.cushioning },
+    { l: 'HEEL DROP', v: rec.shoeProfile.dropRange },
+    { l: 'SUPPORT TYPE', v: rec.shoeProfile.supportType },
+    { l: 'WEEKLY VOLUME', v: `${answers.weeklyMileage} km/week` },
+    { l: 'TERRAIN', v: answers.terrain.charAt(0).toUpperCase() + answers.terrain.slice(1) },
+    { l: 'TARGET DISTANCE', v: answers.distance.replace(/-/g, ' ').toUpperCase() },
+    { l: 'PACE GOAL', v: answers.paceGoal.charAt(0).toUpperCase() + answers.paceGoal.slice(1) },
   ];
 
-  const statsStartY = y + 14;
   const colW = 42;
-  statsData.forEach((stat, i) => {
+  stats.forEach((s, i) => {
     const col = i % 2;
     const row = Math.floor(i / 2);
-    const sx = MARGIN + 6 + col * colW;
-    const sy = statsStartY + row * 14;
-
-    roundedRect(doc, sx, sy, colW - 4, 11, 2, [35, 38, 48]);
-
-    doc.setFontSize(5);
-    doc.setTextColor(...COLORS.textMuted);
-    doc.setFont('helvetica', 'normal');
-    doc.text(stat.label, sx + 3, sy + 4);
-
-    doc.setFontSize(7);
-    doc.setTextColor(...COLORS.textPrimary);
-    doc.setFont('helvetica', 'bold');
-    const val = String(stat.value);
-    doc.text(val.length > 18 ? val.slice(0, 18) + '…' : val, sx + 3, sy + 8.5);
+    const sx = M + 4 + col * colW;
+    const sy = y + row * 13;
+    rr(doc, sx, sy, colW - 4, 11, 2, C.bg);
+    labelValue(doc, sx + 3, sy + 3, s.l, s.v);
   });
 
   // Radar chart (right side)
   try {
-    drawRadarChart(doc, MARGIN + CONTENT_W - 36, y + 40, 24, radarData);
-  } catch {
-    // Fallback if GState not supported
+    drawRadar(doc, M + CW - 36, y + 24, 22, radarData);
+  } catch { /* fallback */ }
+
+  y += 56;
+
+  // Injury + Brand pills
+  if (answers.injuries.length > 0 && !answers.injuries.includes('none')) {
+    doc.setFontSize(5.5);
+    doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
+    doc.setFont('helvetica', 'normal');
+    doc.text('INJURY HISTORY:', M + 4, y);
+    let px = M + 30;
+    answers.injuries.forEach(inj => {
+      const label = inj.replace(/-/g, ' ').toUpperCase();
+      const tw = pill(doc, px, y - 3.5, label, C.redBg, C.red);
+      px += tw + 2;
+    });
+    y += 6;
   }
 
-  y += 76;
+  if (answers.brand.length > 0) {
+    doc.setFontSize(5.5);
+    doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
+    doc.setFont('helvetica', 'normal');
+    doc.text('PREFERRED BRANDS:', M + 4, y);
+    let px = M + 34;
+    answers.brand.forEach(b => {
+      const tw = pill(doc, px, y - 3.5, b.toUpperCase(), C.blueBg, C.blue);
+      px += tw + 2;
+    });
+    y += 8;
+  }
 
-  // ---- #1 Match Card ----
+  // ── #1 Match Card ──
   if (rotation?.primary) {
     const shoe = rotation.primary.shoe;
-    const matchPct = rotation.primary.matchPercent;
+    const pct = rotation.primary.matchPercent;
 
-    roundedRect(doc, MARGIN, y, CONTENT_W, 52, 3, COLORS.cardBg, COLORS.cardBorder);
+    rr(doc, M, y, CW, 56, 3, C.cardBg, C.border);
 
-    // Match badge
-    doc.setFillColor(...COLORS.brand);
-    doc.roundedRect(PAGE_W - MARGIN - 22, y + 4, 18, 9, 2, 2, 'F');
+    // Left red accent
+    doc.setFillColor(C.red[0], C.red[1], C.red[2]);
+    doc.rect(M, y, 3, 56, 'F');
+
+    // #1 badge
+    rr(doc, M + 6, y + 4, 14, 14, 7, C.red);
     doc.setFontSize(8);
-    doc.setTextColor(...COLORS.white);
+    doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.text(`${matchPct}%`, PAGE_W - MARGIN - 13, y + 10, { align: 'center' });
+    doc.text('#1', M + 13, y + 13, { align: 'center' });
 
-    // Award icon area
-    doc.setFillColor(...COLORS.brand);
-    doc.circle(MARGIN + 10, y + 12, 5, 'F');
-    doc.setFontSize(7);
-    doc.setTextColor(...COLORS.white);
-    doc.text('#1', MARGIN + 10, y + 14, { align: 'center' });
+    // Match % badge
+    rr(doc, PW - M - 22, y + 4, 18, 10, 3, C.greenBg);
+    doc.setFontSize(10);
+    doc.setTextColor(C.green[0], C.green[1], C.green[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`${pct}%`, PW - M - 13, y + 11.5, { align: 'center' });
 
-    doc.setFontSize(7);
-    doc.setTextColor(...COLORS.textMuted);
+    doc.setFontSize(5);
+    doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
     doc.setFont('helvetica', 'normal');
-    doc.text('YOUR BEST MATCH', MARGIN + 18, y + 10);
+    doc.text('YOUR BEST MATCH', M + 23, y + 9);
 
-    doc.setFontSize(14);
-    doc.setTextColor(...COLORS.white);
+    doc.setFontSize(15);
+    doc.setTextColor(C.dark[0], C.dark[1], C.dark[2]);
     doc.setFont('helvetica', 'bold');
-    doc.text(`${shoe.brand} ${shoe.model}`, MARGIN + 18, y + 18);
+    doc.text(`${shoe.brand} ${shoe.model}`, M + 23, y + 17);
 
     doc.setFontSize(10);
-    doc.setTextColor(...COLORS.brand);
+    doc.setTextColor(C.red[0], C.red[1], C.red[2]);
     doc.setFont('helvetica', 'bold');
-    doc.text(`$${shoe.priceUSD}`, MARGIN + 18, y + 25);
+    doc.text(`$${shoe.priceUSD}`, M + 23, y + 24);
+
+    doc.setFontSize(6);
+    doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${shoe.weightGrams}g  |  ${shoe.dropMM}mm drop  |  Cushioning: ${shoe.cushioning}/10`, M + 42, y + 24);
 
     // Highlights
-    const highlightY = y + 30;
+    const hlY = y + 30;
     shoe.highlights.forEach((h, i) => {
-      doc.setFillColor(50, 180, 100);
-      doc.circle(MARGIN + 10, highlightY + i * 5.5, 1, 'F');
+      doc.setFillColor(C.green[0], C.green[1], C.green[2]);
+      doc.circle(M + 10, hlY + i * 5.5, 1, 'F');
       doc.setFontSize(6.5);
-      doc.setTextColor(...COLORS.textSecondary);
+      doc.setTextColor(C.text[0], C.text[1], C.text[2]);
       doc.setFont('helvetica', 'normal');
-      doc.text(h, MARGIN + 14, highlightY + i * 5.5 + 1);
+      doc.text(h, M + 14, hlY + i * 5.5 + 1);
     });
 
-    // Amazon link
-    doc.setFillColor(...COLORS.brand);
-    doc.roundedRect(PAGE_W - MARGIN - 50, y + 38, 46, 9, 2, 2, 'F');
-    doc.setFontSize(6.5);
-    doc.setTextColor(...COLORS.white);
-    doc.setFont('helvetica', 'bold');
-    doc.text('BUY ON AMAZON', PAGE_W - MARGIN - 27, y + 44, { align: 'center' });
+    // Match reasons
+    const reasonsX = M + CW / 2 + 5;
+    rotation.primary.reasons.slice(0, 4).forEach((r, i) => {
+      doc.setFillColor(C.red[0], C.red[1], C.red[2]);
+      doc.circle(reasonsX, hlY + i * 5.5, 1, 'F');
+      doc.setFontSize(6.5);
+      doc.setTextColor(C.text[0], C.text[1], C.text[2]);
+      doc.setFont('helvetica', 'normal');
+      doc.text(r, reasonsX + 4, hlY + i * 5.5 + 1);
+    });
 
-    const amazonLink = `https://www.amazon.com/s?k=${encodeURIComponent(`${shoe.brand} ${shoe.model} running shoes`)}&tag=papalex-20`;
-    doc.link(PAGE_W - MARGIN - 50, y + 38, 46, 9, { url: amazonLink });
+    // Amazon button
+    rr(doc, PW - M - 44, y + 44, 40, 9, 3, C.red);
+    doc.setFontSize(7);
+    doc.setTextColor(255, 255, 255);
+    doc.setFont('helvetica', 'bold');
+    doc.text('BUY ON AMAZON', PW - M - 24, y + 50, { align: 'center' });
+    doc.link(PW - M - 44, y + 44, 40, 9, { url: amazonLink(shoe.brand, shoe.model) });
 
     // Review link
-    doc.setFontSize(6);
-    doc.setTextColor(...COLORS.brand);
-    doc.setFont('helvetica', 'normal');
-    doc.textWithLink('Read Full Review on GearUpToFit →', PAGE_W - MARGIN - 50, y + 51, { url: shoe.reviewURL });
+    link(doc, M + 8, y + 53, 'Read Full Review on GearUpToFit', shoe.reviewURL, 6);
 
-    y += 58;
+    y += 62;
   }
 
-  // ---- Why This Match Works ----
-  if (y + 40 < PAGE_H - 20) {
-    roundedRect(doc, MARGIN, y, CONTENT_W, 38, 3, COLORS.cardBg, COLORS.cardBorder);
-
-    doc.setFontSize(9);
-    doc.setTextColor(...COLORS.brand);
-    doc.setFont('helvetica', 'bold');
-    doc.text('WHY THIS MATCH WORKS', MARGIN + 6, y + 8);
-
+  // ── Why This Match Works ──
+  if (y + 35 < PH - 22) {
+    rr(doc, M, y, CW, 32, 3, C.accentBg, C.border);
+    y = sectionTitle(doc, y + 3, 'WHY THIS MATCH WORKS', C.accent);
     doc.setFontSize(6.5);
-    doc.setTextColor(...COLORS.textSecondary);
+    doc.setTextColor(C.text[0], C.text[1], C.text[2]);
     doc.setFont('helvetica', 'normal');
-    const whyLines = doc.splitTextToSize(rec.whyItWorks, CONTENT_W - 12);
-    doc.text(whyLines.slice(0, 8), MARGIN + 6, y + 14);
+    const whyLines = doc.splitTextToSize(rec.whyItWorks, CW - 14);
+    doc.text(whyLines.slice(0, 7), M + 7, y);
+    y += whyLines.length * 3.2 + 4;
 
-    // Link
-    doc.setFontSize(6);
-    doc.setTextColor(...COLORS.brand);
-    doc.textWithLink('How to Choose the Right Running Shoes →', MARGIN + 6, y + 34, { url: 'https://gearuptofit.com/running/how-to-choose-the-right-running-shoes/' });
-
-    y += 44;
+    link(doc, M + 7, y, 'How to Choose the Right Running Shoes -- gearuptofit.com', 'https://gearuptofit.com/running/how-to-choose-the-right-running-shoes/', 5.5);
+    y += 8;
   }
 
   addFooter(doc, 1, totalPages);
 
-  // ========================
-  // PAGE 2: Rotation + Training
-  // ========================
+  // ═══════════════════════════════════════
+  // PAGE 2: Shoe Rotation Strategy
+  // ═══════════════════════════════════════
   doc.addPage();
-  addPageBackground(doc);
   addHeader(doc);
-  y = 28;
+  y = 24;
 
-  // ---- Shoe Rotation ----
-  doc.setFontSize(14);
-  doc.setTextColor(...COLORS.white);
+  doc.setFontSize(18);
+  doc.setTextColor(C.dark[0], C.dark[1], C.dark[2]);
   doc.setFont('helvetica', 'bold');
-  doc.text('SHOE ROTATION STRATEGY', MARGIN, y);
-  y += 3;
+  doc.text('SHOE ROTATION STRATEGY', M, y);
+  y += 4;
+
+  rr(doc, M, y, CW, 8, 2, C.greenBg);
   doc.setFontSize(6.5);
-  doc.setTextColor(...COLORS.textMuted);
-  doc.setFont('helvetica', 'normal');
-  doc.text('Multi-shoe rotation reduces injury risk by up to 39%', MARGIN, y + 4);
-  y += 10;
+  doc.setTextColor(C.green[0], C.green[1], C.green[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Research shows multi-shoe rotation reduces injury risk by up to 39% (British Journal of Sports Medicine)', M + 4, y + 5.5);
+  y += 14;
 
-  const rotationShoes = [
-    { role: 'DAILY TRAINER', emoji: '🏃', shoe: rotation?.primary, desc: 'Easy runs & recovery' },
-    rotation?.speed ? { role: 'SPEED WORK', emoji: '⚡', shoe: rotation.speed, desc: 'Tempo, intervals & race day' } : null,
-    rotation?.longRun ? { role: 'LONG RUN', emoji: '🛣️', shoe: rotation.longRun, desc: 'Weekly long run (15K+)' } : null,
-  ].filter(Boolean) as { role: string; emoji: string; shoe: ScoredShoe; desc: string }[];
+  const shoes = [
+    { role: 'DAILY TRAINER', color: C.red, colorBg: C.redBg, shoe: rotation?.primary, desc: 'Easy runs, recovery, and general training' },
+    rotation?.speed ? { role: 'SPEED WORK', color: C.blue, colorBg: C.blueBg, shoe: rotation.speed, desc: 'Tempo runs, intervals, and race day' } : null,
+    rotation?.longRun ? { role: 'LONG RUN', color: C.purple, colorBg: C.purpleBg, shoe: rotation.longRun, desc: 'Weekly long run (15K+) with max cushion' } : null,
+  ].filter(Boolean) as { role: string; color: RGB; colorBg: RGB; shoe: ScoredShoe; desc: string }[];
 
-  const cardH = 42;
-  rotationShoes.forEach((item, i) => {
-    const cardY = y + i * (cardH + 4);
-    roundedRect(doc, MARGIN, cardY, CONTENT_W, cardH, 3, COLORS.cardBg, COLORS.cardBorder);
+  const cardH = 48;
+  shoes.forEach((item, i) => {
+    const cy = y + i * (cardH + 5);
+    rr(doc, M, cy, CW, cardH, 3, C.cardBg, C.border);
+
+    // Left accent
+    doc.setFillColor(item.color[0], item.color[1], item.color[2]);
+    doc.rect(M, cy, 3, cardH, 'F');
 
     // Role badge
-    doc.setFillColor(...(i === 0 ? COLORS.brand : i === 1 ? [40, 120, 200] as [number, number, number] : [120, 80, 200] as [number, number, number]));
-    doc.roundedRect(MARGIN + 6, cardY + 5, 32, 7, 1.5, 1.5, 'F');
-    doc.setFontSize(5.5);
-    doc.setTextColor(...COLORS.white);
-    doc.setFont('helvetica', 'bold');
-    doc.text(item.role, MARGIN + 22, cardY + 10, { align: 'center' });
+    pill(doc, M + 8, cy + 5, item.role, item.colorBg, item.color);
 
     // Match %
-    doc.setFontSize(8);
-    doc.setTextColor(...COLORS.brand);
+    doc.setFontSize(9);
+    doc.setTextColor(item.color[0], item.color[1], item.color[2]);
     doc.setFont('helvetica', 'bold');
-    doc.text(`${item.shoe.matchPercent}% match`, PAGE_W - MARGIN - 6, cardY + 10, { align: 'right' });
+    doc.text(`${item.shoe.matchPercent}% match`, PW - M - 6, cy + 10, { align: 'right' });
 
-    // Shoe name
-    doc.setFontSize(12);
-    doc.setTextColor(...COLORS.white);
+    // Shoe name + price
+    doc.setFontSize(13);
+    doc.setTextColor(C.dark[0], C.dark[1], C.dark[2]);
     doc.setFont('helvetica', 'bold');
-    doc.text(`${item.shoe.shoe.brand} ${item.shoe.shoe.model}`, MARGIN + 6, cardY + 20);
+    doc.text(`${item.shoe.shoe.brand} ${item.shoe.shoe.model}`, M + 8, cy + 20);
 
-    doc.setFontSize(8);
-    doc.setTextColor(...COLORS.brand);
-    doc.text(`$${item.shoe.shoe.priceUSD}`, MARGIN + 6, cardY + 26);
+    doc.setFontSize(9);
+    doc.setTextColor(C.red[0], C.red[1], C.red[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.text(`$${item.shoe.shoe.priceUSD}`, M + 8, cy + 27);
 
     doc.setFontSize(6);
-    doc.setTextColor(...COLORS.textMuted);
-    doc.text(item.desc, MARGIN + 30, cardY + 26);
+    doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
+    doc.setFont('helvetica', 'normal');
+    doc.text(`${item.shoe.shoe.weightGrams}g  |  ${item.shoe.shoe.dropMM}mm drop  |  ${item.desc}`, M + 28, cy + 27);
 
     // Highlights
     item.shoe.shoe.highlights.forEach((h, hi) => {
-      doc.setFillColor(...COLORS.green);
-      doc.circle(MARGIN + 8 + hi * 50, cardY + 32, 0.8, 'F');
-      doc.setFontSize(5.5);
-      doc.setTextColor(...COLORS.textSecondary);
-      doc.text(h, MARGIN + 11 + hi * 50, cardY + 33);
+      const hx = M + 8 + hi * 55;
+      if (hx + 50 > PW - M) return;
+      doc.setFillColor(C.green[0], C.green[1], C.green[2]);
+      doc.circle(hx, cy + 34, 0.8, 'F');
+      doc.setFontSize(6);
+      doc.setTextColor(C.text[0], C.text[1], C.text[2]);
+      doc.setFont('helvetica', 'normal');
+      doc.text(h, hx + 3, cy + 35);
     });
 
     // Amazon button
-    doc.setFillColor(...COLORS.brand);
-    doc.roundedRect(PAGE_W - MARGIN - 38, cardY + 28, 34, 8, 2, 2, 'F');
-    doc.setFontSize(5.5);
-    doc.setTextColor(...COLORS.white);
+    rr(doc, PW - M - 38, cy + 38, 34, 8, 3, C.red);
+    doc.setFontSize(6);
+    doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.text('BUY ON AMAZON', PAGE_W - MARGIN - 21, cardY + 33.5, { align: 'center' });
-    const amazonUrl = `https://www.amazon.com/s?k=${encodeURIComponent(`${item.shoe.shoe.brand} ${item.shoe.shoe.model} running shoes`)}&tag=papalex-20`;
-    doc.link(PAGE_W - MARGIN - 38, cardY + 28, 34, 8, { url: amazonUrl });
+    doc.text('BUY ON AMAZON', PW - M - 21, cy + 43.5, { align: 'center' });
+    doc.link(PW - M - 38, cy + 38, 34, 8, { url: amazonLink(item.shoe.shoe.brand, item.shoe.shoe.model) });
 
-    // Review link
-    doc.setFontSize(5);
-    doc.setTextColor(...COLORS.brand);
-    doc.textWithLink('Read Review →', PAGE_W - MARGIN - 34, cardY + 40, { url: item.shoe.shoe.reviewURL });
+    // Review
+    link(doc, M + 8, cy + 44, 'Read Review on GearUpToFit', item.shoe.shoe.reviewURL, 5.5);
   });
 
-  y += rotationShoes.length * (cardH + 4) + 6;
+  y += shoes.length * (cardH + 5) + 6;
 
-  // ---- Training Emphasis ----
-  doc.setFontSize(12);
-  doc.setTextColor(...COLORS.white);
-  doc.setFont('helvetica', 'bold');
-  doc.text('TRAINING EMPHASIS', MARGIN, y);
-  y += 6;
+  // ── Training Emphasis ──
+  if (y + 40 < PH - 22) {
+    y = sectionTitle(doc, y, 'TRAINING EMPHASIS');
 
-  rec.trainingEmphasis.forEach((tip, i) => {
-    if (y > PAGE_H - 25) return;
+    rec.trainingEmphasis.forEach((tip, i) => {
+      if (y > PH - 28) return;
+      rr(doc, M + 3, y - 2, CW - 6, 9, 2, i % 2 === 0 ? C.bg : C.cardBg);
 
-    // Number badge
-    doc.setFillColor(...COLORS.brand);
-    doc.circle(MARGIN + 4, y + 1.5, 3, 'F');
-    doc.setFontSize(6);
-    doc.setTextColor(...COLORS.white);
-    doc.setFont('helvetica', 'bold');
-    doc.text(String(i + 1), MARGIN + 4, y + 3, { align: 'center' });
+      // Number
+      rr(doc, M + 5, y - 1, 6, 6, 3, C.red);
+      doc.setFontSize(5.5);
+      doc.setTextColor(255, 255, 255);
+      doc.setFont('helvetica', 'bold');
+      doc.text(String(i + 1), M + 8, y + 3, { align: 'center' });
 
-    doc.setFontSize(6.5);
-    doc.setTextColor(...COLORS.textSecondary);
-    doc.setFont('helvetica', 'normal');
-    const tipLines = doc.splitTextToSize(tip, CONTENT_W - 16);
-    doc.text(tipLines, MARGIN + 12, y + 2.5);
-    y += tipLines.length * 3.5 + 4;
-  });
+      doc.setFontSize(6.5);
+      doc.setTextColor(C.text[0], C.text[1], C.text[2]);
+      doc.setFont('helvetica', 'normal');
+      const tl = doc.splitTextToSize(tip, CW - 22);
+      doc.text(tl[0], M + 14, y + 3);
+      y += 10;
+    });
 
-  // Link to running plan
-  if (y < PAGE_H - 25) {
-    y += 2;
-    doc.setFontSize(6);
-    doc.setTextColor(...COLORS.brand);
-    doc.textWithLink('Get a Free Custom Running Plan →', MARGIN, y, { url: 'https://gearuptofit.com/running/custom-running-plan-free/' });
+    link(doc, M, y, 'Get a Free Custom Running Plan on GearUpToFit', 'https://gearuptofit.com/running/custom-running-plan-free/', 6);
   }
 
   addFooter(doc, 2, totalPages);
 
-  // ========================
-  // PAGE 3: Resources + Links
-  // ========================
+  // ═══════════════════════════════════════
+  // PAGE 3: Resources + Articles
+  // ═══════════════════════════════════════
   doc.addPage();
-  addPageBackground(doc);
   addHeader(doc);
-  y = 28;
+  y = 24;
 
-  doc.setFontSize(14);
-  doc.setTextColor(...COLORS.white);
+  doc.setFontSize(18);
+  doc.setTextColor(C.dark[0], C.dark[1], C.dark[2]);
   doc.setFont('helvetica', 'bold');
-  doc.text('RECOMMENDED RESOURCES', MARGIN, y);
+  doc.text('RECOMMENDED RESOURCES', M, y);
   y += 4;
+
   doc.setFontSize(6.5);
-  doc.setTextColor(...COLORS.textMuted);
+  doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
   doc.setFont('helvetica', 'normal');
-  doc.text('Curated articles & tools from GearUpToFit based on your profile', MARGIN, y + 3);
+  doc.text('Curated articles and tools from GearUpToFit based on your runner profile', M, y + 3);
   y += 12;
 
-  // ---- Read Before You Buy ----
-  roundedRect(doc, MARGIN, y, CONTENT_W, 30, 3, COLORS.cardBg, COLORS.cardBorder);
+  // ── Read Before You Buy ──
+  rr(doc, M, y, CW, 34, 3, C.accentBg, C.border);
+  y = sectionTitle(doc, y + 3, 'READ BEFORE YOU BUY', C.accent);
 
-  doc.setFontSize(9);
-  doc.setTextColor(...COLORS.accent);
-  doc.setFont('helvetica', 'bold');
-  doc.text('📖 READ BEFORE YOU BUY', MARGIN + 6, y + 8);
-
-  const mustReadLinks = [
+  const mustReads = [
     { title: 'How to Choose the Right Running Shoes', url: 'https://gearuptofit.com/running/how-to-choose-the-right-running-shoes/' },
     { title: 'Running Shoes Reviews 2026', url: 'https://gearuptofit.com/review/running-shoes/' },
     { title: 'Best Running Shoes for Different Distances 2026', url: 'https://gearuptofit.com/review/best-running-shoes-for-different-distances/' },
+    { title: 'Best Running Shoes 2026', url: 'https://gearuptofit.com/review/best-running-shoes/' },
   ];
 
-  mustReadLinks.forEach((link, i) => {
-    const ly = y + 14 + i * 5;
-    doc.setFillColor(...COLORS.brand);
-    doc.circle(MARGIN + 9, ly, 1, 'F');
-    doc.setFontSize(6.5);
-    doc.setTextColor(...COLORS.brand);
-    doc.setFont('helvetica', 'normal');
-    doc.textWithLink(link.title, MARGIN + 14, ly + 1.5, { url: link.url });
+  mustReads.forEach((item, i) => {
+    doc.setFillColor(C.accent[0], C.accent[1], C.accent[2]);
+    doc.circle(M + 8, y + i * 5.5, 1, 'F');
+    link(doc, M + 12, y + i * 5.5 + 1.5, item.title, item.url, 6.5);
   });
+  y += mustReads.length * 5.5 + 6;
 
-  y += 36;
-
-  // ---- Recommended Articles ----
+  // ── Personalized Articles ──
   const articles = getRecommendedArticles(answers);
+  y = sectionTitle(doc, y, 'PERSONALIZED ARTICLES FOR YOU');
 
-  doc.setFontSize(9);
-  doc.setTextColor(...COLORS.brand);
-  doc.setFont('helvetica', 'bold');
-  doc.text('PERSONALIZED ARTICLES FOR YOU', MARGIN, y + 4);
-  y += 10;
-
-  articles.forEach((article, i) => {
-    if (y > PAGE_H - 50) return;
-    const itemH = 10;
-    roundedRect(doc, MARGIN, y, CONTENT_W, itemH, 2, [35, 38, 48]);
-
-    doc.setFontSize(6);
-    doc.setTextColor(...COLORS.textMuted);
-    doc.setFont('helvetica', 'normal');
-    doc.text(article.category.toUpperCase(), MARGIN + 4, y + 4);
-
-    doc.setFontSize(7);
-    doc.setTextColor(...COLORS.textPrimary);
-    doc.setFont('helvetica', 'bold');
-    doc.textWithLink(article.title, MARGIN + 4, y + 8, { url: article.url });
+  articles.forEach((article) => {
+    if (y > PH - 55) return;
+    rr(doc, M, y, CW, 11, 2, C.bg);
 
     doc.setFontSize(5.5);
-    doc.setTextColor(...COLORS.brand);
-    doc.text('→', PAGE_W - MARGIN - 6, y + 6);
-    doc.link(MARGIN, y, CONTENT_W, itemH, { url: article.url });
+    doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.text(article.category.toUpperCase(), M + 4, y + 4);
 
-    y += itemH + 3;
+    doc.setFontSize(7);
+    doc.setTextColor(C.dark[0], C.dark[1], C.dark[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.textWithLink(article.title, M + 4, y + 8.5, { url: article.url });
+    doc.link(M, y, CW, 11, { url: article.url });
+
+    y += 14;
   });
 
-  y += 4;
-
-  // ---- Injury Resources ----
+  // ── Injury Prevention ──
   const injuryArticles = getInjuryArticles(answers.injuries);
-  if (injuryArticles.length > 0 && y < PAGE_H - 60) {
-    doc.setFontSize(9);
-    doc.setTextColor(230, 80, 80);
-    doc.setFont('helvetica', 'bold');
-    doc.text('INJURY PREVENTION RESOURCES', MARGIN, y + 4);
-    y += 10;
+  if (injuryArticles.length > 0 && y < PH - 55) {
+    y += 2;
+    y = sectionTitle(doc, y, 'INJURY PREVENTION RESOURCES', C.redLight);
 
     injuryArticles.forEach(article => {
-      if (y > PAGE_H - 50) return;
-      roundedRect(doc, MARGIN, y, CONTENT_W, 10, 2, [35, 38, 48]);
+      if (y > PH - 40) return;
+      rr(doc, M, y, CW, 11, 2, C.redBg);
 
-      doc.setFontSize(6);
-      doc.setTextColor(...COLORS.textMuted);
-      doc.text(article.category.toUpperCase(), MARGIN + 4, y + 4);
+      doc.setFontSize(5.5);
+      doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
+      doc.setFont('helvetica', 'bold');
+      doc.text(article.category.toUpperCase(), M + 4, y + 4);
 
       doc.setFontSize(7);
-      doc.setTextColor(...COLORS.textPrimary);
+      doc.setTextColor(C.dark[0], C.dark[1], C.dark[2]);
       doc.setFont('helvetica', 'bold');
-      doc.textWithLink(article.title, MARGIN + 4, y + 8, { url: article.url });
-      doc.link(MARGIN, y, CONTENT_W, 10, { url: article.url });
+      doc.textWithLink(article.title, M + 4, y + 8.5, { url: article.url });
+      doc.link(M, y, CW, 11, { url: article.url });
 
-      y += 13;
+      y += 14;
     });
-
-    y += 2;
   }
 
-  // ---- Useful Tools ----
-  if (y < PAGE_H - 50) {
-    doc.setFontSize(9);
-    doc.setTextColor(...COLORS.brand);
-    doc.setFont('helvetica', 'bold');
-    doc.text('FREE TOOLS & CALCULATORS', MARGIN, y + 4);
-    y += 10;
+  // ── Free Tools ──
+  if (y < PH - 50) {
+    y += 2;
+    y = sectionTitle(doc, y, 'FREE TOOLS AND CALCULATORS', C.blue);
 
-    const tools = [
-      { title: 'Free Custom Running Plan', url: 'https://gearuptofit.com/running/custom-running-plan-free/' },
-      { title: 'Running Distance Calculator', url: 'https://gearuptofit.com/running/running-distance-calculator/' },
-      { title: 'Macro Calculator', url: 'https://gearuptofit.com/fitness-and-health-calculators/macro-calculator/' },
-      { title: 'Sleep Efficiency Calculator', url: 'https://gearuptofit.com/fitness-and-health-calculators/sleep-efficiency-calculator/' },
-    ];
-
-    const toolColW = CONTENT_W / 2 - 2;
+    const tools = getToolLinks(answers);
+    const toolColW = CW / 2 - 3;
     tools.forEach((tool, i) => {
       const col = i % 2;
       const row = Math.floor(i / 2);
-      const tx = MARGIN + col * (toolColW + 4);
-      const ty = y + row * 14;
+      const tx = M + col * (toolColW + 6);
+      const ty = y + row * 16;
 
-      roundedRect(doc, tx, ty, toolColW, 11, 2, [35, 38, 48]);
-      doc.setFontSize(6.5);
-      doc.setTextColor(...COLORS.brand);
+      rr(doc, tx, ty, toolColW, 13, 2, C.blueBg);
+      doc.setFontSize(7);
+      doc.setTextColor(C.blue[0], C.blue[1], C.blue[2]);
       doc.setFont('helvetica', 'bold');
-      doc.textWithLink(tool.title, tx + 4, ty + 7, { url: tool.url });
-      doc.link(tx, ty, toolColW, 11, { url: tool.url });
+      doc.textWithLink(tool.title, tx + 4, ty + 5, { url: tool.url });
+
+      doc.setFontSize(5.5);
+      doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
+      doc.setFont('helvetica', 'normal');
+      doc.text(tool.description, tx + 4, ty + 10);
+
+      doc.link(tx, ty, toolColW, 13, { url: tool.url });
     });
-
-    y += Math.ceil(tools.length / 2) * 14 + 6;
-  }
-
-  // ---- About / CTA ----
-  if (y < PAGE_H - 40) {
-    roundedRect(doc, MARGIN, y, CONTENT_W, 28, 3, [35, 25, 25], COLORS.brand);
-
-    doc.setFontSize(10);
-    doc.setTextColor(...COLORS.white);
-    doc.setFont('helvetica', 'bold');
-    doc.text('GEAR UP. SHOW UP. LEVEL UP.', PAGE_W / 2, y + 10, { align: 'center' });
-
-    doc.setFontSize(6.5);
-    doc.setTextColor(...COLORS.textSecondary);
-    doc.setFont('helvetica', 'normal');
-    doc.text('Visit GearUpToFit for expert running gear reviews, training plans & more.', PAGE_W / 2, y + 16, { align: 'center' });
-
-    doc.setFontSize(7);
-    doc.setTextColor(...COLORS.brand);
-    doc.setFont('helvetica', 'bold');
-    doc.textWithLink('gearuptofit.com', PAGE_W / 2 - 10, y + 22, { url: 'https://gearuptofit.com/' });
-    doc.text('  |  ', PAGE_W / 2, y + 22, { align: 'center' });
-    doc.textWithLink('About Us', PAGE_W / 2 + 8, y + 22, { url: 'https://gearuptofit.com/about-us/' });
+    y += Math.ceil(tools.length / 2) * 16 + 4;
   }
 
   addFooter(doc, 3, totalPages);
+
+  // ═══════════════════════════════════════
+  // PAGE 4: Complete Kit + CTA
+  // ═══════════════════════════════════════
+  doc.addPage();
+  addHeader(doc);
+  y = 24;
+
+  doc.setFontSize(18);
+  doc.setTextColor(C.dark[0], C.dark[1], C.dark[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.text('COMPLETE YOUR RUNNING KIT', M, y);
+  y += 4;
+
+  doc.setFontSize(6.5);
+  doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Expert-picked gear to complement your shoe rotation', M, y + 3);
+  y += 12;
+
+  // Kit items
+  const kitItems = [
+    { title: 'Best Running Socks for Blister Prevention', url: 'https://gearuptofit.com/review/best-running-socks-for-blister-prevention/', cat: 'SOCKS', color: C.green, bg: C.greenBg },
+    { title: 'Best Smartwatches for Runners', url: 'https://gearuptofit.com/review/best-smartwatches-for-runners/', cat: 'TECH', color: C.blue, bg: C.blueBg },
+    { title: 'Best Running Headlamps', url: 'https://gearuptofit.com/review/low-light-running-headlamps/', cat: 'SAFETY', color: C.accent, bg: C.accentBg },
+    { title: 'Best Foam Rollers for Muscle Recovery', url: 'https://gearuptofit.com/best-foam-rollers-for-muscle-recovery/', cat: 'RECOVERY', color: C.purple, bg: C.purpleBg },
+    { title: 'Best Daily Running Shoes', url: 'https://gearuptofit.com/review/best-daily-running-shoes/', cat: 'SHOES', color: C.red, bg: C.redBg },
+    { title: 'Running Gear for Beginners', url: 'https://gearuptofit.com/running/running-gear-for-beginners/', cat: 'BEGINNER', color: C.blue, bg: C.blueBg },
+  ];
+
+  kitItems.forEach((item, i) => {
+    rr(doc, M, y, CW, 13, 2, item.bg, C.border);
+
+    // Category pill
+    pill(doc, M + 4, y + 2, item.cat, item.bg, item.color);
+
+    doc.setFontSize(7.5);
+    doc.setTextColor(C.dark[0], C.dark[1], C.dark[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.textWithLink(item.title, M + 4, y + 10.5, { url: item.url });
+    doc.link(M, y, CW, 13, { url: item.url });
+
+    y += 16;
+  });
+
+  y += 6;
+
+  // ── Your Profile Summary Card ──
+  rr(doc, M, y, CW, 50, 3, C.bg, C.border);
+  y = sectionTitle(doc, y + 3, 'YOUR PROFILE AT A GLANCE');
+
+  const profileItems = [
+    `Foot Type: ${answers.footType.charAt(0).toUpperCase() + answers.footType.slice(1)}`,
+    `Pronation: ${answers.pronation.charAt(0).toUpperCase() + answers.pronation.slice(1)}`,
+    `Weekly Volume: ${answers.weeklyMileage} km/week`,
+    `Target Distance: ${answers.distance.replace(/-/g, ' ')}`,
+    `Primary Terrain: ${answers.terrain.charAt(0).toUpperCase() + answers.terrain.slice(1)}`,
+    `Pace Goal: ${answers.paceGoal.charAt(0).toUpperCase() + answers.paceGoal.slice(1)}`,
+    `Budget: ${answers.budget.map(b => b === 'under-100' ? 'Under $100' : b === '200-plus' ? '$200+' : '$' + b.replace('-', '-$')).join(', ') || 'Flexible'}`,
+    `Preferred Brands: ${answers.brand.length > 0 ? answers.brand.map(b => b.charAt(0).toUpperCase() + b.slice(1)).join(', ') : 'Open to all'}`,
+  ];
+
+  profileItems.forEach((item, i) => {
+    const col = i % 2;
+    const row = Math.floor(i / 2);
+    doc.setFontSize(6.5);
+    doc.setTextColor(C.text[0], C.text[1], C.text[2]);
+    doc.setFont('helvetica', 'normal');
+    doc.text(item, M + 7 + col * (CW / 2), y + row * 7);
+  });
+  y += Math.ceil(profileItems.length / 2) * 7 + 6;
+
+  // ── CTA Block ──
+  y += 4;
+  rr(doc, M, y, CW, 36, 4, C.red);
+
+  doc.setFontSize(14);
+  doc.setTextColor(255, 255, 255);
+  doc.setFont('helvetica', 'bold');
+  doc.text('GEAR UP. SHOW UP. LEVEL UP.', PW / 2, y + 12, { align: 'center' });
+
+  doc.setFontSize(7);
+  doc.setTextColor(255, 240, 240);
+  doc.setFont('helvetica', 'normal');
+  doc.text('Visit GearUpToFit for expert running gear reviews, training plans, and more.', PW / 2, y + 19, { align: 'center' });
+
+  rr(doc, PW / 2 - 25, y + 23, 50, 9, 3, C.white);
+  doc.setFontSize(7);
+  doc.setTextColor(C.red[0], C.red[1], C.red[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.text('gearuptofit.com', PW / 2, y + 29, { align: 'center' });
+  doc.link(PW / 2 - 25, y + 23, 50, 9, { url: 'https://gearuptofit.com/' });
+
+  // Logo in CTA
+  if (logoData) {
+    try { doc.addImage(logoData, 'PNG', PW / 2 - 8, y + 33 - 2, 16, 16); } catch {}
+  }
+
+  addFooter(doc, 4, totalPages);
 
   // Save
   const slug = `runmatch-${answers.terrain}-${answers.distance}-${answers.pronation}`;
