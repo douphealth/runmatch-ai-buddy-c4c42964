@@ -1,7 +1,7 @@
 import { QuizAnswers } from './quiz-data';
 import { Shoe, shoeDatabase } from './shoe-database';
 
-interface ScoredShoe {
+export interface ScoredShoe {
   shoe: Shoe;
   score: number;
   matchPercent: number;
