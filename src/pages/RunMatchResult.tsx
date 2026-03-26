@@ -127,15 +127,16 @@ const RunMatchResult = () => {
     }
   };
 
-  const handleDownloadPDF = () => {
+  const handleDownloadPDF = async () => {
     if (!answers || !recommendation || !rotation) return;
-    generateResultsPDF({
+    toast.info('Generating your report...');
+    await generateResultsPDF({
       answers,
       recommendation,
       rotation,
       radarData,
     });
-    toast.success('Your RunMatch Report is downloading!');
+    toast.success('Your RunMatch Report has been downloaded!');
   };
 
   const shareOnTwitter = () => {
