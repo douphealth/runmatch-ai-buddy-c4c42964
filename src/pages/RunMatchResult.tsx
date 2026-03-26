@@ -7,13 +7,14 @@ import { scoreShoes, buildRotation } from '@/lib/scoring-engine';
 import { getRecommendedArticles, getInjuryArticles, getToolLinks, getKitLinks } from '@/lib/article-links';
 import { getDynamicFAQs } from '@/lib/dynamic-faqs';
 import { generateFAQSchema, generateProductSchema, generateMetaTitle, generateMetaDescription } from '@/lib/seo';
+import { generateResultsPDF } from '@/lib/pdf-generator';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
 import {
   ArrowLeft, ExternalLink, BookOpen, Star, RotateCcw, Target, Share2, Zap,
   ArrowRight, Shield, ShoppingCart, Award, TrendingUp, Heart, Wrench,
-  MessageCircle, CheckCircle, Copy, Twitter, Facebook
+  MessageCircle, CheckCircle, Copy, Twitter, Facebook, Download
 } from 'lucide-react';
 import {
   Radar, RadarChart, PolarGrid, PolarAngleAxis, ResponsiveContainer,
