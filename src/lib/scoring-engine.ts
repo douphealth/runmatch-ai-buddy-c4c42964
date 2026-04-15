@@ -9,8 +9,12 @@ export interface ScoredShoe {
 }
 
 function terrainMatch(userTerrain: string, shoeTerrain: string[]): number {
-  if (userTerrain === 'mixed') return shoeTerrain.length > 1 ? 1 : 0.6;
-  return shoeTerrain.includes(userTerrain as any) ? 1 : 0;
+  if (userTerrain === 'mixed') return shoeTerrain.length > 1 ? 1 : 0.7;
+  if (shoeTerrain.includes(userTerrain as any)) return 1;
+  // Hybrid shoes get partial credit
+  if (userTerrain === 'trail' && shoeTerrain.includes('road')) return 0.1;
+  if (userTerrain === 'road' && shoeTerrain.includes('trail')) return 0.15;
+  return 0;
 }
 
 function distanceMatch(userDistance: string, shoeDistances: string[]): number {
@@ -60,15 +64,15 @@ function budgetMatch(userBudgets: string[], price: number): number {
 }
 
 function brandMatch(userBrands: string[], shoeBrand: string): number {
-  if (userBrands.length === 0) return 0.5; // no preference
-  return userBrands.some(b => shoeBrand.toLowerCase() === b.toLowerCase()) ? 1 : 0.1;
+  if (userBrands.length === 0) return 0.7; // no preference — don't penalize
+  return userBrands.some(b => shoeBrand.toLowerCase() === b.toLowerCase()) ? 1 : 0.3;
 }
 
 function paceMatch(userPace: string, shoe: Shoe): number {
   switch (userPace) {
-    case 'easy': return shoe.category === 'daily' || shoe.category === 'max-cushion' ? 1 : 0.3;
-    case 'moderate': return shoe.category === 'daily' ? 1 : shoe.category === 'speed' ? 0.6 : 0.5;
-    case 'tempo': return shoe.category === 'speed' ? 1 : shoe.category === 'race' ? 0.8 : 0.3;
+    case 'easy': return shoe.category === 'daily' || shoe.category === 'max-cushion' ? 1 : shoe.category === 'trail' ? 0.7 : 0.3;
+    case 'moderate': return shoe.category === 'daily' || shoe.category === 'hybrid' ? 1 : shoe.category === 'speed' ? 0.6 : 0.5;
+    case 'tempo': return shoe.category === 'speed' ? 1 : shoe.category === 'race' ? 0.8 : shoe.category === 'hybrid' ? 0.5 : 0.3;
     case 'race': return shoe.category === 'race' ? 1 : shoe.category === 'speed' ? 0.7 : 0.2;
     default: return 0.5;
   }
@@ -83,13 +87,13 @@ function mileageMatch(weeklyMileage: number, shoe: Shoe): number {
 
 export function scoreShoes(answers: QuizAnswers): ScoredShoe[] {
   const weights = {
-    terrain: 0.15,
+    terrain: 0.18,
     distance: 0.15,
     pronation: 0.15,
-    footType: 0.10,
+    footType: 0.12,
     injury: 0.10,
     budget: 0.08,
-    brand: 0.10,
+    brand: 0.05,
     pace: 0.10,
     mileage: 0.07,
   };
@@ -154,6 +158,14 @@ export function buildRotation(answers: QuizAnswers): ShoeRotation {
       s.shoe.id !== speed?.shoe.id &&
       (s.shoe.category === 'max-cushion' || s.shoe.cushioning >= 8)
     ) || null;
+  }
+
+  // For trail runners, prefer trail shoes in rotation
+  if (answers.terrain === 'trail' && primary.shoe.category !== 'trail') {
+    const trailShoe = scored.find(s => s.shoe.category === 'trail');
+    if (trailShoe) {
+      return { primary: trailShoe, speed, longRun };
+    }
   }
 
   return { primary, speed, longRun };

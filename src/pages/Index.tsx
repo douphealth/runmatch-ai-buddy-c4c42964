@@ -1,7 +1,8 @@
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { quizSteps, QuizAnswers, defaultAnswers, generateSlug, encodeAnswers } from '@/lib/quiz-data';
+import { generateWebAppSchema } from '@/lib/seo';
 import QuizHero from '@/components/quiz/QuizHero';
 import QuizProgress from '@/components/quiz/QuizProgress';
 import QuizStepContent from '@/components/quiz/QuizStepContent';
@@ -12,6 +13,14 @@ const Index = () => {
   const [currentStep, setCurrentStep] = useState(-1);
   const [answers, setAnswers] = useState<QuizAnswers>(defaultAnswers);
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const schema = document.createElement('script');
+    schema.type = 'application/ld+json';
+    schema.textContent = JSON.stringify(generateWebAppSchema());
+    document.head.appendChild(schema);
+    return () => { schema.remove(); };
+  }, []);
 
   const progress = currentStep >= 0 ? ((currentStep + 1) / quizSteps.length) * 100 : 0;
 
