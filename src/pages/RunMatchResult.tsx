@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { decodeAnswers, QuizAnswers } from '@/lib/quiz-data';
@@ -8,6 +8,7 @@ import { getRecommendedArticles, getInjuryArticles, getToolLinks, getKitLinks } 
 import { getDynamicFAQs } from '@/lib/dynamic-faqs';
 import { generateFAQSchema, generateProductSchema, generateMetaTitle, generateMetaDescription } from '@/lib/seo';
 import { generateResultsPDF } from '@/lib/pdf-generator';
+import ResultsLoadingScreen from '@/components/results/ResultsLoadingScreen';
 import { Button } from '@/components/ui/button';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import { Badge } from '@/components/ui/badge';
@@ -40,6 +41,7 @@ const RunMatchResult = () => {
   const { slug } = useParams();
   const [searchParams] = useSearchParams();
   const [copied, setCopied] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const answers: QuizAnswers | null = useMemo(() => {
     const encoded = searchParams.get('d');
@@ -147,6 +149,8 @@ const RunMatchResult = () => {
     window.open(`https://www.facebook.com/dialog/share?app_id=966242223397117&href=${encodeURIComponent(quizUrl)}&quote=${encodeURIComponent('I just found my perfect running shoe match! 🏃‍♂️ Take the free RunMatch AI quiz by GearUpToFit!')}`, '_blank');
   };
 
+  const handleLoadingComplete = useCallback(() => setIsLoading(false), []);
+
   if (!answers || !recommendation) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4 bg-gradient-dark">
@@ -162,6 +166,10 @@ const RunMatchResult = () => {
         </div>
       </div>
     );
+  }
+
+  if (isLoading) {
+    return <ResultsLoadingScreen onComplete={handleLoadingComplete} />;
   }
 
   const rec = recommendation;
