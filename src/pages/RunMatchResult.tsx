@@ -174,7 +174,7 @@ const RunMatchResult = () => {
 
   const rec = recommendation;
   const primary = rotation?.primary;
-  const shoesAnalyzed = topShoes.length > 0 ? 29 : 0;
+  const shoesAnalyzed = topShoes.length > 0 ? 40 : 0;
   const dataPoints = 9;
 
   return (
