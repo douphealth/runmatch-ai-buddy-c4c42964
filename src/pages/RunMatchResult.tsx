@@ -382,6 +382,13 @@ const RunMatchResult = () => {
                         <div className="text-xs font-bold uppercase tracking-wider text-primary">{s.role}</div>
                         <MatchScoreBadge percent={s.shoe.matchPercent} size="sm" />
                       </div>
+                      <ShoeImage
+                        brand={s.shoe.shoe.brand}
+                        model={s.shoe.shoe.model}
+                        imageURL={s.shoe.shoe.imageURL}
+                        size="sm"
+                        className="mb-3"
+                      />
                       <h4 className="font-bold text-lg mb-1">{s.shoe.shoe.brand} {s.shoe.shoe.model}</h4>
                       <p className="text-xs text-muted-foreground mb-2">{s.desc}</p>
                       <div className="flex flex-wrap gap-1.5 mb-3">
