@@ -291,6 +291,7 @@ const RunMatchResult = () => {
                     brand={primary.shoe.brand}
                     model={primary.shoe.model}
                     imageURL={primary.shoe.imageURL}
+                    amazonASIN={primary.shoe.amazonASIN}
                     size="lg"
                   />
                 </div>
