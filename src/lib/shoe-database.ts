@@ -835,6 +835,17 @@ export const shoeDatabase: Shoe[] = [
   },
 ];
 
-export function getAmazonLink(asin: string, affiliateTag: string = 'papalex-20'): string {
-  return `https://www.amazon.com/dp/${asin}?tag=${affiliateTag}`;
+/**
+ * Returns a guaranteed-valid Amazon affiliate URL using a search query.
+ * Search-based links never 404 (unlike ASIN-based links when products are
+ * delisted or replaced by newer versions). All revenue routes through papalex-20.
+ */
+export function getAmazonLink(brand: string, model: string, affiliateTag: string = 'papalex-20'): string {
+  const query = encodeURIComponent(`${brand} ${model} running shoes`);
+  return `https://www.amazon.com/s?k=${query}&tag=${affiliateTag}`;
+}
+
+/** Convenience helper that takes a Shoe directly. */
+export function getShoeAmazonLink(shoe: Pick<Shoe, 'brand' | 'model'>, affiliateTag: string = 'papalex-20'): string {
+  return getAmazonLink(shoe.brand, shoe.model, affiliateTag);
 }
