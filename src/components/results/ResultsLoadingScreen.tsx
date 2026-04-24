@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const stages = [
   { label: 'Analyzing your runner profile...', icon: '🦶', pct: 15 },
   { label: 'Matching foot type & pronation...', icon: '🔬', pct: 30 },
-  { label: 'Scoring 29+ shoes against your data...', icon: '👟', pct: 50 },
+  { label: 'Scoring 69+ shoes against your data...', icon: '👟', pct: 50 },
   { label: 'Building rotation strategy...', icon: '🔄', pct: 70 },
   { label: 'Generating training emphasis...', icon: '📊', pct: 85 },
   { label: 'Finalizing your match report...', icon: '✨', pct: 100 },
@@ -83,7 +83,7 @@ const ResultsLoadingScreen = ({ onComplete }: ResultsLoadingScreenProps) => {
 
         <div className="flex justify-center gap-6 text-[10px] text-muted-foreground">
           <span>📊 9 data points</span>
-          <span>👟 29+ shoes</span>
+          <span>👟 69+ shoes</span>
           <span>🔬 Sports science</span>
         </div>
       </div>
