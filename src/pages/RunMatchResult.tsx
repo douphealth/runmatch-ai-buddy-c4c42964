@@ -387,6 +387,7 @@ const RunMatchResult = () => {
                         brand={s.shoe.shoe.brand}
                         model={s.shoe.shoe.model}
                         imageURL={s.shoe.shoe.imageURL}
+                        amazonASIN={s.shoe.shoe.amazonASIN}
                         size="sm"
                         className="mb-3"
                       />
