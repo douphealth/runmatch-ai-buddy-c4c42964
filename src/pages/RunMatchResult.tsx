@@ -6,7 +6,7 @@ import { generateRecommendation } from '@/lib/recommendation-engine';
 import { scoreShoes, buildRotation } from '@/lib/scoring-engine';
 import { getRecommendedArticles, getInjuryArticles, getToolLinks, getKitLinks } from '@/lib/article-links';
 import { getDynamicFAQs } from '@/lib/dynamic-faqs';
-import { generateFAQSchema, generateProductSchema, generateMetaTitle, generateMetaDescription } from '@/lib/seo';
+import { generateFAQSchema, generateProductSchema, generateMetaTitle, generateMetaDescription, applyOpenGraphImage } from '@/lib/seo';
 import { generateResultsPDF } from '@/lib/pdf-generator';
 import ResultsLoadingScreen from '@/components/results/ResultsLoadingScreen';
 import { Button } from '@/components/ui/button';
@@ -91,9 +91,14 @@ const RunMatchResult = () => {
 
   useEffect(() => {
     if (!recommendation || !answers) return;
-    document.title = generateMetaTitle(answers);
+    const title = generateMetaTitle(answers);
+    const description = generateMetaDescription(recommendation);
+    document.title = title;
     const desc = document.querySelector('meta[name="description"]');
-    if (desc) desc.setAttribute('content', generateMetaDescription(recommendation));
+    if (desc) desc.setAttribute('content', description);
+
+    const recommendedShoe = rotation?.primary?.shoe;
+    const cleanupOG = recommendedShoe ? applyOpenGraphImage(recommendedShoe, title, description) : () => {};
 
     const faqSchema = document.createElement('script');
     faqSchema.type = 'application/ld+json';
@@ -102,7 +107,7 @@ const RunMatchResult = () => {
 
     const productSchema = document.createElement('script');
     productSchema.type = 'application/ld+json';
-    productSchema.textContent = JSON.stringify(generateProductSchema(recommendation, answers));
+    productSchema.textContent = JSON.stringify(generateProductSchema(recommendation, answers, recommendedShoe));
     document.head.appendChild(productSchema);
 
     const breadcrumbSchema = document.createElement('script');
@@ -118,8 +123,8 @@ const RunMatchResult = () => {
     });
     document.head.appendChild(breadcrumbSchema);
 
-    return () => { faqSchema.remove(); productSchema.remove(); breadcrumbSchema.remove(); };
-  }, [recommendation, answers, faqs]);
+    return () => { faqSchema.remove(); productSchema.remove(); breadcrumbSchema.remove(); cleanupOG(); };
+  }, [recommendation, answers, faqs, rotation]);
 
   const handleShare = async () => {
     try {
@@ -291,6 +296,7 @@ const RunMatchResult = () => {
                     brand={primary.shoe.brand}
                     model={primary.shoe.model}
                     imageURL={primary.shoe.imageURL}
+                    amazonASIN={primary.shoe.amazonASIN}
                     size="lg"
                   />
                 </div>
@@ -386,6 +392,7 @@ const RunMatchResult = () => {
                         brand={s.shoe.shoe.brand}
                         model={s.shoe.shoe.model}
                         imageURL={s.shoe.shoe.imageURL}
+                        amazonASIN={s.shoe.shoe.amazonASIN}
                         size="sm"
                         className="mb-3"
                       />
