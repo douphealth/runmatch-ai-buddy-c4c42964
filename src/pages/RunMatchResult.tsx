@@ -6,7 +6,7 @@ import { generateRecommendation } from '@/lib/recommendation-engine';
 import { scoreShoes, buildRotation } from '@/lib/scoring-engine';
 import { getRecommendedArticles, getInjuryArticles, getToolLinks, getKitLinks } from '@/lib/article-links';
 import { getDynamicFAQs } from '@/lib/dynamic-faqs';
-import { generateFAQSchema, generateProductSchema, generateMetaTitle, generateMetaDescription } from '@/lib/seo';
+import { generateFAQSchema, generateProductSchema, generateMetaTitle, generateMetaDescription, applyOpenGraphImage } from '@/lib/seo';
 import { generateResultsPDF } from '@/lib/pdf-generator';
 import ResultsLoadingScreen from '@/components/results/ResultsLoadingScreen';
 import { Button } from '@/components/ui/button';
