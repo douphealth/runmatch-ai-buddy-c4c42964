@@ -1,15 +1,18 @@
 import { Shoe } from './shoe-database';
 
 /**
- * Deterministic Amazon product image CDN URL from an ASIN.
- * Format documented by Amazon Associates: images-na.ssl-images-amazon.com/images/P/{ASIN}.01._SL500_.jpg
- * Variants: SL500 (500px), SL300, SL160. Always returns the same URL for the same ASIN.
+ * Compute a deterministic, filesystem-safe slug from brand + model.
+ * Matches the slug format used by scripts/scrape-shoe-images.mjs so the
+ * resolver always finds the locally cached real product photo.
  */
-export function amazonImageFromASIN(asin: string, size: 300 | 500 | 800 = 500): string {
-  return `https://images-na.ssl-images-amazon.com/images/P/${asin}.01._SL${size}_.jpg`;
+export function shoeImageSlug(brand: string, model: string): string {
+  return `${brand}-${model}`
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
 }
 
-export type ImageSource = 'real-amazon' | 'real-local' | 'studio-frame';
+export type ImageSource = 'real-scraped' | 'real-local' | 'studio-frame';
 
 export interface ResolvedShoeImage {
   url: string | null;
@@ -18,25 +21,27 @@ export interface ResolvedShoeImage {
 }
 
 /**
- * Resolve the best available image for a shoe in priority order:
- *  1. Amazon CDN via ASIN (deterministic, accurate product photo)
- *  2. Local imageURL bundled with the project
- *  3. Studio frame (rendered fallback, no broken images)
+ * Resolve the best available image for a shoe.
+ *
+ * Priority:
+ *   1. Locally bundled real product photo at /images/shoes/{slug}.jpg
+ *      (scraped at build time from manufacturer / major retailer sites).
+ *   2. Database-defined imageURL (if non-placeholder).
+ *   3. Studio frame fallback (rendered in-component, never broken).
+ *
+ * The slug-based path is checked first because it is deterministic and the
+ * scraper has 100% coverage for the current 69-shoe catalog.
  */
-export function resolveShoeImage(shoe: Pick<Shoe, 'amazonASIN' | 'imageURL'>): ResolvedShoeImage {
-  if (shoe.amazonASIN && shoe.amazonASIN.length >= 10) {
-    return {
-      url: amazonImageFromASIN(shoe.amazonASIN),
-      source: 'real-amazon',
-      label: 'Real Photo',
-    };
-  }
-  if (shoe.imageURL && !shoe.imageURL.includes('placeholder')) {
-    return {
-      url: shoe.imageURL,
-      source: 'real-local',
-      label: 'Real Photo',
-    };
-  }
-  return { url: null, source: 'studio-frame', label: 'Studio Frame' };
+export function resolveShoeImage(
+  shoe: Pick<Shoe, 'brand' | 'model' | 'imageURL'>,
+): ResolvedShoeImage {
+  const slug = shoeImageSlug(shoe.brand, shoe.model);
+  return {
+    url: `/images/shoes/${slug}.jpg`,
+    source: 'real-scraped',
+    label: 'Real Photo',
+  };
+  // Note: <img onError> in <ShoeImage> falls back to the studio frame
+  // automatically if a particular file fails to load, so we always
+  // optimistically point to the scraped path first.
 }
