@@ -40,6 +40,23 @@ const ShoeComparisonTable = ({ shoes, getAmazonLink }: ShoeComparisonTableProps)
         </thead>
         <tbody>
           <tr className="border-b border-border/20">
+            <td className="py-3 px-2 font-medium text-muted-foreground align-top">Image</td>
+            {shoes.slice(0, 5).map((s) => (
+              <td key={s.shoe.id} className="py-3 px-2">
+                <div className="w-24 mx-auto">
+                  <ShoeImage
+                    brand={s.shoe.brand}
+                    model={s.shoe.model}
+                    imageURL={s.shoe.imageURL}
+                    amazonASIN={s.shoe.amazonASIN}
+                    size="sm"
+                    showSourceBadge={true}
+                  />
+                </div>
+              </td>
+            ))}
+          </tr>
+          <tr className="border-b border-border/20">
             <td className="py-3 px-2 font-medium text-muted-foreground">Match</td>
             {shoes.slice(0, 5).map((s, i) => (
               <td key={s.shoe.id} className="text-center py-3 px-2">
