@@ -809,11 +809,14 @@ export async function generateResultsPDF(data: PDFData) {
   if (ruleEndL > ruleStartL) doc.rect(ruleStartL, kickerY - 1.4, ruleEndL - ruleStartL, 0.3, 'F');
   if (ruleEndR > ruleStartR) doc.rect(ruleStartR, kickerY - 1.4, ruleEndR - ruleStartR, 0.3, 'F');
 
-  // Headline — single line, generous tracking, centered in safe zone
+  // Headline — single line, generous tracking, manually centered (charSpace-aware)
   doc.setFontSize(20);
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
-  doc.text('GEAR UP.   SHOW UP.   LEVEL UP.', safeCenter, y + 25, { align: 'center', charSpace: 0.6 } as any);
+  const headlineText = 'GEAR UP.   SHOW UP.   LEVEL UP.';
+  const headlineCharSpace = 0.6;
+  const headlineW = doc.getTextWidth(headlineText) + headlineCharSpace * (headlineText.length - 1);
+  doc.text(headlineText, safeCenter - headlineW / 2, y + 25, { align: 'left', charSpace: headlineCharSpace } as any);
 
   // Ornamental divider with center diamond
   const divY = y + 31;
