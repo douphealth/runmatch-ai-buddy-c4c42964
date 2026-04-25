@@ -112,6 +112,7 @@ const Index = () => {
                 answers={answers}
                 setAnswer={setAnswer}
                 handleMultiSelect={handleMultiSelect}
+                onAutoAdvance={step.type === 'single' ? handleNext : undefined}
               />
             </motion.div>
           </AnimatePresence>
