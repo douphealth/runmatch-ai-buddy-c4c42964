@@ -250,6 +250,80 @@ function amazonLink(brand: string, model: string): string {
   return `https://www.amazon.com/s?k=${encodeURIComponent(`${brand} ${model} running shoes`)}&tag=papalex-20`;
 }
 
+// Loads a shoe product image as a base64 PNG/JPG so jsPDF can embed it.
+// Returns null if the file does not exist (caller falls back to a styled placeholder).
+async function loadShoeImage(brand: string, model: string): Promise<{ data: string; format: 'JPEG' | 'PNG' } | null> {
+  const slug = shoeImageSlug(brand, model);
+  const url = `/images/shoes/${slug}.jpg`;
+  try {
+    const r = await fetch(url);
+    if (!r.ok) return null;
+    const blob = await r.blob();
+    if (blob.size < 2000) return null; // tiny / placeholder
+    const data = await new Promise<string>((resolve, reject) => {
+      const fr = new FileReader();
+      fr.onloadend = () => resolve(fr.result as string);
+      fr.onerror = reject;
+      fr.readAsDataURL(blob);
+    });
+    const format: 'JPEG' | 'PNG' = blob.type.includes('png') ? 'PNG' : 'JPEG';
+    return { data, format };
+  } catch {
+    return null;
+  }
+}
+
+// Draws a premium framed product image with soft shadow + brand-tinted background.
+// Falls back to a clean labelled placeholder when no image is available.
+function drawShoeFrame(
+  doc: jsPDF,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  img: { data: string; format: 'JPEG' | 'PNG' } | null,
+  brand: string,
+  model: string,
+) {
+  // Soft drop shadow
+  doc.setFillColor(0, 0, 0);
+  (doc as any).setGState && (doc as any).setGState(new (doc as any).GState({ opacity: 0.06 }));
+  if (typeof (doc as any).roundedRect === 'function') {
+    (doc as any).roundedRect(x + 0.6, y + 0.8, w, h, 2, 2, 'F');
+  } else {
+    doc.rect(x + 0.6, y + 0.8, w, h, 'F');
+  }
+  (doc as any).setGState && (doc as any).setGState(new (doc as any).GState({ opacity: 1 }));
+
+  // Frame background (subtle off-white studio)
+  rr(doc, x, y, w, h, 2, [248, 249, 251], C.border);
+
+  // Floor shadow strip
+  doc.setFillColor(0, 0, 0);
+  (doc as any).setGState && (doc as any).setGState(new (doc as any).GState({ opacity: 0.08 }));
+  doc.ellipse(x + w / 2, y + h - 2.5, w * 0.32, 1.1, 'F');
+  (doc as any).setGState && (doc as any).setGState(new (doc as any).GState({ opacity: 1 }));
+
+  if (img) {
+    const pad = 1.5;
+    try {
+      doc.addImage(img.data, img.format, x + pad, y + pad, w - pad * 2, h - pad * 2 - 1.5, undefined, 'FAST');
+    } catch {
+      // ignore — placeholder text will be drawn below
+    }
+  } else {
+    // Clean labelled placeholder
+    doc.setFontSize(5.5);
+    doc.setTextColor(C.red[0], C.red[1], C.red[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.text(brand.toUpperCase(), x + w / 2, y + h / 2 - 1, { align: 'center' });
+    doc.setFontSize(7);
+    doc.setTextColor(C.dark[0], C.dark[1], C.dark[2]);
+    const lines = doc.splitTextToSize(model, w - 4);
+    doc.text(lines.slice(0, 2), x + w / 2, y + h / 2 + 3, { align: 'center' });
+  }
+}
+
 // ─── Main generator ───
 
 export async function generateResultsPDF(data: PDFData) {
