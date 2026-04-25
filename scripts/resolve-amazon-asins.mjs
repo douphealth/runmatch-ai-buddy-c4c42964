@@ -69,14 +69,19 @@ function modelTokens(model) {
     .filter(t => t.length >= 2);
 }
 
+// Amazon often strips the brand from titles (e.g. "Men's Ghost 17 ..." for Brooks).
+// So we require: ALL meaningful model tokens present, and either the brand
+// appears OR the result was returned by a brand-specific query (which it is —
+// our query always includes the brand, so SerpAPI already filters strongly).
 function isPlausibleMatch(title, brand, model) {
   if (!title) return false;
   const t = title.toLowerCase();
-  if (!t.includes(brand.toLowerCase())) return false;
   const toks = modelTokens(model);
-  // Require >=70% of model tokens to appear in the title.
+  if (toks.length === 0) return false;
   const hits = toks.filter(tok => t.includes(tok)).length;
-  return hits / toks.length >= 0.7;
+  // Require ALL model tokens (e.g. "Ghost" + "17") to be in the title.
+  // This is strict enough to reject the wrong year/variant.
+  return hits === toks.length;
 }
 
 let keyIdx = 0;
@@ -123,9 +128,17 @@ async function resolveShoe(shoe) {
 async function main() {
   const shoes = parseShoes();
   const cache = loadCache();
+  const RETRY_MISSES = process.env.RETRY_MISSES === '1';
   const targets = ONLY_ID
     ? shoes.filter(s => s.id === ONLY_ID)
-    : shoes.filter(s => FORCE || !cache[s.id] || (!cache[s.id].asin && !cache[s.id].permanentMiss));
+    : shoes.filter(s => {
+        if (FORCE) return true;
+        const c = cache[s.id];
+        if (!c) return true;                      // never tried
+        if (c.asin) return false;                 // already resolved
+        if (RETRY_MISSES) return true;            // retry misses on demand
+        return false;                             // skip permanent misses by default
+      });
 
   console.log(`Total shoes: ${shoes.length}. Cached: ${Object.keys(cache).length}. To resolve: ${targets.length}. Cap: ${MAX_CALLS}.`);
 
