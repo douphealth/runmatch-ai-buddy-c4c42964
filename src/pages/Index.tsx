@@ -151,6 +151,7 @@ const Index = () => {
         onNext={handleNext}
         canProceed={canProceed()}
         isLast={isLast}
+        hideNext={step.type === 'single'}
       />
     </div>
   );
