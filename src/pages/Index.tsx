@@ -54,15 +54,15 @@ const Index = () => {
     return !!val;
   };
 
-  const handleNext = () => {
-    if (currentStep < quizSteps.length - 1) {
-      setCurrentStep(prev => prev + 1);
-    } else {
+  const handleNext = useCallback(() => {
+    setCurrentStep(prev => {
+      if (prev < quizSteps.length - 1) return prev + 1;
       const slug = generateSlug(answers);
       const encoded = encodeAnswers(answers);
       navigate(`/app/runmatch/${slug}?d=${encoded}`);
-    }
-  };
+      return prev;
+    });
+  }, [answers, navigate]);
 
   const handleBack = () => {
     setCurrentStep(prev => Math.max(-1, prev - 1));
