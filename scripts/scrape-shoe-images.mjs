@@ -121,18 +121,21 @@ async function downloadImage(url, dest) {
   return buf.length;
 }
 
-async function processShoe(brand, model) {
+async function processShoe(brand, model, force = false) {
   const slug = shoeSlug(brand, model);
   const dest = path.join(OUT_DIR, `${slug}.jpg`);
-  try {
-    const stat = await fs.stat(dest);
-    if (stat.size > 4000) return { brand, model, slug, skipped: true };
-  } catch {}
+  if (!force) {
+    try {
+      const stat = await fs.stat(dest);
+      if (stat.size > 4000) return { brand, model, slug, skipped: true };
+    } catch {}
+  }
 
   const queries = [
-    `${brand} ${model} running shoe official product`,
-    `${brand} ${model} running shoe white background`,
-    `${brand} ${model} running shoes`,
+    `${brand} ${model} site:amazon.com`,
+    `${brand} ${model} running shoe white background product`,
+    `${brand} ${model} site:zappos.com`,
+    `${brand} ${model} running shoes product photo`,
   ];
 
   let lastErr;
