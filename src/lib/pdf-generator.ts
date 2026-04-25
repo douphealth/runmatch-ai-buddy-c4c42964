@@ -860,15 +860,19 @@ export async function generateResultsPDF(data: PDFData) {
   doc.setTextColor(C.dark[0], C.dark[1], C.dark[2]);
   doc.setFont('helvetica', 'bold');
   doc.text('COMPLETE YOUR RUNNING KIT', M, y);
-  y += 4;
 
-  doc.setFontSize(6.5);
+  // Red underline accent
+  doc.setFillColor(C.red[0], C.red[1], C.red[2]);
+  doc.rect(M, y + 2, 28, 0.7, 'F');
+  y += 7;
+
+  doc.setFontSize(7);
   doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
-  doc.setFont('helvetica', 'normal');
-  doc.text('Expert-picked gear to complement your shoe rotation', M, y + 3);
-  y += 12;
+  doc.setFont('helvetica', 'italic');
+  doc.text('Expert-picked gear and reviews to complement your shoe rotation.', M, y);
+  y += 8;
 
-  // Kit items
+  // Kit items — 2-column denser grid
   const kitItems = [
     { title: 'Best Running Socks for Blister Prevention', url: 'https://gearuptofit.com/review/best-running-socks-for-blister-prevention/', cat: 'SOCKS', color: C.green, bg: C.greenBg },
     { title: 'Best Smartwatches for Runners', url: 'https://gearuptofit.com/review/best-smartwatches-for-runners/', cat: 'TECH', color: C.blue, bg: C.blueBg },
@@ -878,47 +882,65 @@ export async function generateResultsPDF(data: PDFData) {
     { title: 'Running Gear for Beginners', url: 'https://gearuptofit.com/running/running-gear-for-beginners/', cat: 'BEGINNER', color: C.blue, bg: C.blueBg },
   ];
 
+  const kitColW = CW / 2 - 2;
+  const kitH = 14;
   kitItems.forEach((item, i) => {
-    rr(doc, M, y, CW, 13, 2, item.bg, C.border);
+    const col = i % 2;
+    const row = Math.floor(i / 2);
+    const kx = M + col * (kitColW + 4);
+    const ky = y + row * (kitH + 3);
+    rr(doc, kx, ky, kitColW, kitH, 2, item.bg, C.border);
 
-    // Category pill
-    pill(doc, M + 4, y + 2, item.cat, item.bg, item.color);
+    // Left color bar
+    doc.setFillColor(item.color[0], item.color[1], item.color[2]);
+    doc.rect(kx, ky, 1.6, kitH, 'F');
 
-    doc.setFontSize(7.5);
+    // Category microlabel
+    doc.setFontSize(5);
+    doc.setTextColor(item.color[0], item.color[1], item.color[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.text(item.cat, kx + 4, ky + 4.5, { charSpace: 0.5 } as any);
+
+    doc.setFontSize(7);
     doc.setTextColor(C.dark[0], C.dark[1], C.dark[2]);
     doc.setFont('helvetica', 'bold');
-    doc.textWithLink(item.title, M + 4, y + 10.5, { url: item.url });
-    doc.link(M, y, CW, 13, { url: item.url });
+    const tLines = doc.splitTextToSize(item.title, kitColW - 12);
+    doc.text(tLines[0], kx + 4, ky + 9.5);
 
-    y += 16;
+    // Chevron
+    doc.setFontSize(8);
+    doc.setTextColor(item.color[0], item.color[1], item.color[2]);
+    doc.text('›', kx + kitColW - 4, ky + 9.5, { align: 'right' });
+
+    doc.link(kx, ky, kitColW, kitH, { url: item.url });
   });
+  y += Math.ceil(kitItems.length / 2) * (kitH + 3) + 8;
 
-  y += 6;
-
-  // ── Your Profile Summary Card ──
-  rr(doc, M, y, CW, 50, 3, C.bg, C.border);
-  y = sectionTitle(doc, y + 3, 'YOUR PROFILE AT A GLANCE');
-
+  // ── Your Profile Summary Card — proper label/value treatment ──
   const profileItems = [
-    `Foot Type: ${answers.footType.charAt(0).toUpperCase() + answers.footType.slice(1)}`,
-    `Pronation: ${answers.pronation.charAt(0).toUpperCase() + answers.pronation.slice(1)}`,
-    `Weekly Volume: ${answers.weeklyMileage} km/week`,
-    `Target Distance: ${answers.distance.replace(/-/g, ' ')}`,
-    `Primary Terrain: ${answers.terrain.charAt(0).toUpperCase() + answers.terrain.slice(1)}`,
-    `Pace Goal: ${answers.paceGoal.charAt(0).toUpperCase() + answers.paceGoal.slice(1)}`,
-    `Budget: ${answers.budget.map(b => b === 'under-100' ? 'Under $100' : b === '200-plus' ? '$200+' : '$' + b.replace('-', '-$')).join(', ') || 'Flexible'}`,
-    `Preferred Brands: ${answers.brand.length > 0 ? answers.brand.map(b => b.charAt(0).toUpperCase() + b.slice(1)).join(', ') : 'Open to all'}`,
+    { l: 'FOOT TYPE', v: answers.footType.charAt(0).toUpperCase() + answers.footType.slice(1) },
+    { l: 'PRONATION', v: answers.pronation.charAt(0).toUpperCase() + answers.pronation.slice(1) },
+    { l: 'WEEKLY VOLUME', v: `${answers.weeklyMileage} km / week` },
+    { l: 'TARGET DISTANCE', v: answers.distance.replace(/-/g, ' ').toUpperCase() },
+    { l: 'PRIMARY TERRAIN', v: answers.terrain.charAt(0).toUpperCase() + answers.terrain.slice(1) },
+    { l: 'PACE GOAL', v: answers.paceGoal.charAt(0).toUpperCase() + answers.paceGoal.slice(1) },
+    { l: 'BUDGET', v: answers.budget.map((b: string) => b === 'under-100' ? 'Under $100' : b === '200-plus' ? '$200+' : '$' + b.replace('-', '-$')).join(', ') || 'Flexible' },
+    { l: 'PREFERRED BRANDS', v: answers.brand.length > 0 ? answers.brand.map((b: string) => b.charAt(0).toUpperCase() + b.slice(1)).join(', ') : 'Open to all' },
   ];
 
+  const profileH = 12 + Math.ceil(profileItems.length / 2) * 12 + 4;
+  rr(doc, M, y, CW, profileH, 3, C.bg, C.border);
+  y = sectionTitle(doc, y + 3, 'YOUR PROFILE AT A GLANCE');
+
+  const piColW = (CW - 14) / 2;
   profileItems.forEach((item, i) => {
     const col = i % 2;
     const row = Math.floor(i / 2);
-    doc.setFontSize(6.5);
-    doc.setTextColor(C.text[0], C.text[1], C.text[2]);
-    doc.setFont('helvetica', 'normal');
-    doc.text(item, M + 7 + col * (CW / 2), y + row * 7);
+    const px = M + 7 + col * piColW;
+    const py = y + row * 10;
+    labelValue(doc, px, py, item.l, item.v, piColW - 4);
   });
-  y += Math.ceil(profileItems.length / 2) * 7 + 6;
+  y += Math.ceil(profileItems.length / 2) * 10 + 4;
 
   // ── Premium CTA Block ──
   y += 6;
