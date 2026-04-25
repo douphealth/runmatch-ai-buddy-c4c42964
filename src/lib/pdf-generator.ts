@@ -343,6 +343,17 @@ export async function generateResultsPDF(data: PDFData) {
     });
   } catch { /* no logo fallback */ }
 
+  // Pre-load real product photos in parallel for the rotation shoes
+  const [primaryImg, speedImg, longImg] = await Promise.all([
+    rotation?.primary ? loadShoeImage(rotation.primary.shoe.brand, rotation.primary.shoe.model) : Promise.resolve(null),
+    rotation?.speed ? loadShoeImage(rotation.speed.shoe.brand, rotation.speed.shoe.model) : Promise.resolve(null),
+    rotation?.longRun ? loadShoeImage(rotation.longRun.shoe.brand, rotation.longRun.shoe.model) : Promise.resolve(null),
+  ]);
+  const shoeImageMap = new Map<string, { data: string; format: 'JPEG' | 'PNG' } | null>();
+  if (rotation?.primary) shoeImageMap.set(rotation.primary.shoe.id, primaryImg);
+  if (rotation?.speed) shoeImageMap.set(rotation.speed.shoe.id, speedImg);
+  if (rotation?.longRun) shoeImageMap.set(rotation.longRun.shoe.id, longImg);
+
   // ═══════════════════════════════════════
   // PAGE 1: Profile + Primary Match
   // ═══════════════════════════════════════
