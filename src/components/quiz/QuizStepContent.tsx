@@ -10,6 +10,7 @@ interface QuizStepContentProps {
   answers: QuizAnswers;
   setAnswer: (key: string, value: string | number | string[]) => void;
   handleMultiSelect: (stepId: string, value: string) => void;
+  onAutoAdvance?: () => void;
 }
 
 const QuizStepContent = ({ step, answers, setAnswer, handleMultiSelect }: QuizStepContentProps) => {
