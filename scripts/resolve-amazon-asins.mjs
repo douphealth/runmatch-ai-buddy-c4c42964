@@ -128,9 +128,17 @@ async function resolveShoe(shoe) {
 async function main() {
   const shoes = parseShoes();
   const cache = loadCache();
+  const RETRY_MISSES = process.env.RETRY_MISSES === '1';
   const targets = ONLY_ID
     ? shoes.filter(s => s.id === ONLY_ID)
-    : shoes.filter(s => FORCE || !cache[s.id] || (!cache[s.id].asin && !cache[s.id].permanentMiss));
+    : shoes.filter(s => {
+        if (FORCE) return true;
+        const c = cache[s.id];
+        if (!c) return true;                      // never tried
+        if (c.asin) return false;                 // already resolved
+        if (RETRY_MISSES) return true;            // retry misses on demand
+        return false;                             // skip permanent misses by default
+      });
 
   console.log(`Total shoes: ${shoes.length}. Cached: ${Object.keys(cache).length}. To resolve: ${targets.length}. Cap: ${MAX_CALLS}.`);
 
