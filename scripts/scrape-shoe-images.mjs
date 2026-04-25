@@ -17,12 +17,31 @@ import path from 'node:path';
 const SHOES_TS = 'src/lib/shoe-database.ts';
 const OUT_DIR = 'public/images/shoes';
 
-// Prefer manufacturer + premium retailer domains for clean product shots
+// Prefer clean white-background product shots from major retail CDNs first
 const PREFERRED_DOMAINS = [
+  // Tier 1 — almost always clean transparent / white-bg product photos
+  'media-amazon.com', 'images-na.ssl-images-amazon.com', 'm.media-amazon.com',
+  'zappos.com', 'zappos1.com', 'zappos2.com',
+  'runningwarehouse.com', 'runningwarehouse-staging.com',
+  'roadrunnersports.com', 'fleetfeet.com', 'jackrabbit.com',
+  // Tier 2 — manufacturer storefronts (often clean shots)
   'nike.com', 'brooksrunning.com', 'asics.com', 'hoka.com', 'sauconyshop.com', 'saucony.com',
   'on-running.com', 'on.com', 'adidas.com', 'puma.com', 'newbalance.com', 'salomon.com',
-  'altrarunning.com', 'mizunousa.com', 'mizuno.com', 'roadrunnersports.com', 'fleetfeet.com',
-  'runningwarehouse.com', 'rei.com', 'dickssportinggoods.com', 'zappos.com', 'jackrabbit.com',
+  'altrarunning.com', 'mizunousa.com', 'mizuno.com',
+  'rei.com', 'dickssportinggoods.com',
+];
+
+// Extra-clean CDN paths — strongly bonus
+const CLEAN_CDN_PATTERNS = [
+  'media-amazon.com', 'm.media-amazon.com', 'images-na.ssl-images-amazon.com',
+  'zappos', 'runningwarehouse',
+];
+
+// Penalize collages, marketing banners, lifestyle shots
+const BAD_KEYWORDS = [
+  'banner', 'lifestyle', 'collage', 'campaign', 'hero', 'background',
+  'feature', 'detail', 'tech', 'guide', 'review', 'comparison',
+  'on-foot', 'onfoot', 'wearing', 'runner', 'athlete', 'model',
 ];
 
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15';
