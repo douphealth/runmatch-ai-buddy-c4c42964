@@ -47,29 +47,62 @@ const QuizStepContent = ({ step, answers, setAnswer, handleMultiSelect, onAutoAd
 
   return (
     <div>
-      {/* Step Image — full editorial-style hero */}
+      {/* Step Image — premium editorial hero, mobile-first */}
       {step.image && (
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          className="mb-5 md:mb-7 -mx-4 md:mx-0"
+          initial={{ opacity: 0, y: -8, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="mb-5 md:mb-7 -mx-4 sm:mx-0"
         >
-          <div className="relative rounded-none md:rounded-2xl overflow-hidden bg-card/40 ring-1 ring-border/30 shadow-2xl shadow-primary/5 aspect-[16/8] md:aspect-[16/7] max-h-[260px] md:max-h-[320px]">
-            <img
+          <div
+            className="
+              relative overflow-hidden
+              rounded-2xl sm:rounded-3xl
+              bg-gradient-to-br from-card/60 via-card/30 to-background/60
+              ring-1 ring-border/40
+              shadow-[0_20px_60px_-20px_hsl(var(--primary)/0.25)]
+              aspect-[16/9] xs:aspect-[16/8] sm:aspect-[16/7] md:aspect-[16/6]
+              max-h-[200px] sm:max-h-[260px] md:max-h-[300px] lg:max-h-[340px]
+              mx-2 sm:mx-0
+            "
+          >
+            {/* Ambient glow behind image */}
+            <div className="absolute -inset-8 bg-primary/10 blur-3xl opacity-40 pointer-events-none" />
+
+            {/* Image */}
+            <motion.img
               src={step.image}
               alt={step.title}
-              className="w-full h-full object-cover object-center"
+              initial={{ scale: 1.05 }}
+              animate={{ scale: 1 }}
+              transition={{ duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
+              className="relative w-full h-full object-cover object-center will-change-transform"
               loading="eager"
               decoding="async"
+              fetchPriority="high"
             />
-            {/* Subtle bottom gradient for the step badge only — keeps imagery visible */}
-            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background/90 via-background/30 to-transparent pointer-events-none" />
-            <div className="absolute bottom-3 left-4 md:left-5">
-              <span className="inline-flex items-center gap-1.5 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-primary bg-background/70 backdrop-blur-md border border-primary/30 px-2.5 py-1 rounded-full">
+
+            {/* Edge vignette for depth */}
+            <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_55%,hsl(var(--background)/0.6)_100%)] pointer-events-none" />
+
+            {/* Bottom gradient for step badge legibility */}
+            <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-background/95 via-background/40 to-transparent pointer-events-none" />
+
+            {/* Top subtle highlight */}
+            <div className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-background/30 to-transparent pointer-events-none" />
+
+            {/* Step badge */}
+            <div className="absolute bottom-2.5 left-3 sm:bottom-3.5 sm:left-5 right-3 sm:right-5 flex items-center justify-between gap-2">
+              <motion.span
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.3, duration: 0.4 }}
+                className="inline-flex items-center gap-1.5 text-[9px] sm:text-[10px] md:text-xs font-bold uppercase tracking-[0.18em] sm:tracking-[0.2em] text-primary bg-background/80 backdrop-blur-md border border-primary/30 px-2.5 py-1 rounded-full shadow-lg shadow-background/20"
+              >
                 <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                Step {(['footType','pronation','weeklyMileage','distance','terrain','paceGoal','injuries','brand','budget'].indexOf(step.id) + 1)} of 9
-              </span>
+                Step {(['footType','pronation','weeklyMileage','distance','terrain','paceGoal','injuries','brand','budget'].indexOf(step.id) + 1)} / 9
+              </motion.span>
             </div>
           </div>
         </motion.div>
