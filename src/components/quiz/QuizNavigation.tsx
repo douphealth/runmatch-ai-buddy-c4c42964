@@ -22,30 +22,34 @@ const QuizNavigation = ({ onBack, onNext, canProceed, isLast, hideNext = false }
           <ArrowLeft className="w-4 h-4" /> Back
         </Button>
 
-        <motion.div whileHover={{ scale: canProceed ? 1.03 : 1 }} whileTap={{ scale: canProceed ? 0.97 : 1 }}>
-          <Button
-            onClick={onNext}
-            disabled={!canProceed}
-            className={`gap-2 font-bold uppercase tracking-[0.1em] rounded-xl transition-all ${
-              isLast
-                ? 'bg-gradient-primary glow-primary h-13 md:h-14 px-8 md:px-12 text-base animate-pulse-glow'
-                : 'bg-primary hover:bg-primary/90 h-11 md:h-12 px-6 md:px-10'
-            }`}
-          >
-            {isLast ? (
-              <>
-                <Sparkles className="w-4 h-4" />
-                Get My Match
-                <Zap className="w-4 h-4" />
-              </>
-            ) : (
-              <>
-                Next
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </Button>
-        </motion.div>
+        {hideNext && !isLast ? (
+          <span className="text-xs text-muted-foreground italic">Tap an option to continue →</span>
+        ) : (
+          <motion.div whileHover={{ scale: canProceed ? 1.03 : 1 }} whileTap={{ scale: canProceed ? 0.97 : 1 }}>
+            <Button
+              onClick={onNext}
+              disabled={!canProceed}
+              className={`gap-2 font-bold uppercase tracking-[0.1em] rounded-xl transition-all ${
+                isLast
+                  ? 'bg-gradient-primary glow-primary h-13 md:h-14 px-8 md:px-12 text-base animate-pulse-glow'
+                  : 'bg-primary hover:bg-primary/90 h-11 md:h-12 px-6 md:px-10'
+              }`}
+            >
+              {isLast ? (
+                <>
+                  <Sparkles className="w-4 h-4" />
+                  Get My Match
+                  <Zap className="w-4 h-4" />
+                </>
+              ) : (
+                <>
+                  Next
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </Button>
+          </motion.div>
+        )}
       </div>
     </div>
   );
