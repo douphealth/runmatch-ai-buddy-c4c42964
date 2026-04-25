@@ -365,28 +365,43 @@ export async function generateResultsPDF(data: PDFData) {
     try { doc.addImage(logoData, 'PNG', M, y, 18, 18); } catch {}
   }
 
-  doc.setFontSize(22);
+  // Eyebrow tag above the title
+  doc.setFontSize(6);
+  doc.setTextColor(C.red[0], C.red[1], C.red[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.text('PERSONALIZED REPORT  ·  RUNMATCH AI', M + 22, y + 4, { charSpace: 0.6 } as any);
+
+  doc.setFontSize(20);
   doc.setTextColor(C.dark[0], C.dark[1], C.dark[2]);
   doc.setFont('helvetica', 'bold');
-  doc.text('YOUR RUNNING SHOE', M + 22, y + 8);
+  doc.text('YOUR RUNNING SHOE', M + 22, y + 11);
   doc.setTextColor(C.red[0], C.red[1], C.red[2]);
-  doc.text('MATCH REPORT', M + 22, y + 16);
-  y += 22;
+  doc.text('MATCH REPORT', M + 22, y + 19);
 
-  // Date
+  // Red underline accent
+  doc.setFillColor(C.red[0], C.red[1], C.red[2]);
+  doc.rect(M + 22, y + 21.5, 32, 0.7, 'F');
+  y += 26;
+
+  // Date + report meta on a single line
   doc.setFontSize(6);
   doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
   doc.setFont('helvetica', 'normal');
-  doc.text(`Generated ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, M, y + 2);
-  y += 6;
+  const dateStr = new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+  doc.text(`GENERATED ${dateStr.toUpperCase()}   ·   ID ${answers.terrain.toUpperCase()}-${answers.distance.toUpperCase()}-${answers.pronation.toUpperCase()}`, M, y, { charSpace: 0.4 } as any);
+  y += 5;
 
-  // Summary
+  // Summary in a soft callout box for emphasis
+  const sumLines = doc.splitTextToSize(rec.shoeProfile.summary, CW - 8);
+  const sumH = sumLines.length * 3.6 + 5;
+  rr(doc, M, y, CW, sumH, 2, C.bg);
+  doc.setFillColor(C.red[0], C.red[1], C.red[2]);
+  doc.rect(M, y, 1.5, sumH, 'F');
   doc.setFontSize(7.5);
   doc.setTextColor(C.text[0], C.text[1], C.text[2]);
-  doc.setFont('helvetica', 'normal');
-  const sumLines = doc.splitTextToSize(rec.shoeProfile.summary, CW);
-  doc.text(sumLines, M, y);
-  y += sumLines.length * 3.5 + 5;
+  doc.setFont('helvetica', 'italic');
+  doc.text(sumLines, M + 5, y + 4);
+  y += sumH + 5;
 
   // ── Runner Profile Card ──
   rr(doc, M, y, CW, 72, 3, C.cardBg, C.border);
