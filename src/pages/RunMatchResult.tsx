@@ -33,10 +33,12 @@ const fadeUp = {
   viewport: { once: true, margin: '-50px' },
 };
 
-const getAmazonProductLink = (brand: string, model: string) => {
-  const query = encodeURIComponent(`${brand} ${model} running shoes`);
-  return `https://www.amazon.com/s?k=${query}&tag=papalex-20`;
-};
+import { getAmazonAffiliateLink } from '@/lib/amazon-link';
+
+// Resolves a guaranteed-working Amazon affiliate URL.
+// Uses verified /dp/ASIN when available, otherwise brand-filtered search.
+const getAmazonProductLink = (brand: string, model: string, asin?: string) =>
+  getAmazonAffiliateLink(brand, model, asin);
 
 const RunMatchResult = () => {
   const { slug } = useParams();
