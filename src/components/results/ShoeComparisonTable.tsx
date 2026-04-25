@@ -21,7 +21,7 @@ const ShoeComparisonTable = ({ shoes, getAmazonLink }: ShoeComparisonTableProps)
 
   return (
     <div className="overflow-x-auto -mx-4 px-4">
-      <table className="w-full text-xs md:text-sm min-w-[600px]">
+      <table className="w-full text-xs md:text-sm min-w-[720px]">
         <thead>
           <tr className="border-b border-border/30">
             <th className="text-left py-3 px-2 text-muted-foreground font-medium uppercase tracking-wider text-[10px]">Spec</th>
