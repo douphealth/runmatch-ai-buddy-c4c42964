@@ -29,7 +29,7 @@ const brandAccent: Record<string, string> = {
 };
 
 const sizeMap = {
-  sm: { container: 'h-32', icon: 'w-10 h-10', brand: 'text-[10px]', model: 'text-xs', badge: 'text-[8px] px-1.5 py-0.5' },
+  sm: { container: 'h-28', icon: 'w-10 h-10', brand: 'text-[10px]', model: 'text-xs', badge: 'text-[8px] px-1.5 py-0.5' },
   md: { container: 'h-44', icon: 'w-14 h-14', brand: 'text-xs', model: 'text-sm', badge: 'text-[9px] px-2 py-0.5' },
   lg: { container: 'h-56 md:h-64', icon: 'w-20 h-20', brand: 'text-sm', model: 'text-lg md:text-xl', badge: 'text-[10px] px-2 py-1' },
 };
