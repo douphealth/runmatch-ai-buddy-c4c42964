@@ -858,22 +858,25 @@ export async function generateResultsPDF(data: PDFData) {
 
   doc.link(btnX, btnY, btnW, btnH, { url: 'https://gearuptofit.com/' });
 
-  // Trust micro-line — centered in safe zone, smaller spacing so it never touches the seal
-  doc.setFontSize(5);
-  doc.setTextColor(160, 150, 145);
+  // Trust micro-line — manually centered (charSpace-aware), auto-shrinks if too wide.
+  // Sits on a subtle gold hairline base rule for premium "footer" feel.
   doc.setFont('helvetica', 'normal');
-  const trustText = 'TRUSTED BY RUNNERS WORLDWIDE  ·  EST. GEARUPTOFIT  ·  POWERED BY RUNMATCH AI';
+  const trustText = 'TRUSTED BY RUNNERS WORLDWIDE   ·   EST. GEARUPTOFIT   ·   POWERED BY RUNMATCH AI';
   const trustCharSpace = 0.9;
-  const trustW = doc.getTextWidth(trustText) + trustCharSpace * (trustText.length - 1);
-  // Auto-shrink if it would exceed the safe zone
   let trustSize = 5;
-  let finalTrustW = trustW;
-  while (finalTrustW > safeWidth - 4 && trustSize > 3.6) {
+  doc.setFontSize(trustSize);
+  let trustW = doc.getTextWidth(trustText) + trustCharSpace * (trustText.length - 1);
+  while (trustW > safeWidth - 6 && trustSize > 3.6) {
     trustSize -= 0.2;
     doc.setFontSize(trustSize);
-    finalTrustW = doc.getTextWidth(trustText) + trustCharSpace * (trustText.length - 1);
+    trustW = doc.getTextWidth(trustText) + trustCharSpace * (trustText.length - 1);
   }
-  doc.text(trustText, safeCenter, y + ctaH - 4, { align: 'center', charSpace: trustCharSpace } as any);
+  const trustY = y + ctaH - 4.5;
+  // Faint gold base rule that the trust line sits on — blends footer into card
+  doc.setFillColor(gold[0], gold[1], gold[2]);
+  doc.rect(safeLeft + 2, trustY - 3.2, safeWidth - 4, 0.15, 'F');
+  doc.setTextColor(170, 158, 150);
+  doc.text(trustText, safeCenter - trustW / 2, trustY, { align: 'left', charSpace: trustCharSpace } as any);
 
   // Left monogram (logo in white circle chip)
   if (logoData) {
