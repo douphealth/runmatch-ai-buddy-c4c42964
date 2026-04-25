@@ -454,11 +454,22 @@ export async function generateResultsPDF(data: PDFData) {
     const shoe = rotation.primary.shoe;
     const pct = rotation.primary.matchPercent;
 
-    rr(doc, M, y, CW, 56, 3, C.cardBg, C.border);
+    const cardH = 70;
+    rr(doc, M, y, CW, cardH, 3, C.cardBg, C.border);
 
     // Left red accent
     doc.setFillColor(C.red[0], C.red[1], C.red[2]);
-    doc.rect(M, y, 3, 56, 'F');
+    doc.rect(M, y, 3, cardH, 'F');
+
+    // Layout: left text column, right image column
+    const imgW = 54;
+    const imgH = cardH - 12;
+    const imgX = PW - M - imgW - 4;
+    const imgY = y + 6;
+    const leftRight = imgX - 4; // right edge of text area
+
+    // Product image (premium framed)
+    drawShoeFrame(doc, imgX, imgY, imgW, imgH, shoeImageMap.get(shoe.id) ?? null, shoe.brand, shoe.model);
 
     // #1 badge
     rr(doc, M + 6, y + 4, 14, 14, 7, C.red);
@@ -467,22 +478,23 @@ export async function generateResultsPDF(data: PDFData) {
     doc.setFont('helvetica', 'bold');
     doc.text('#1', M + 13, y + 13, { align: 'center' });
 
-    // Match % badge
-    rr(doc, PW - M - 22, y + 4, 18, 10, 3, C.greenBg);
-    doc.setFontSize(10);
+    // Match % badge — top of image area
+    rr(doc, imgX + imgW - 20, imgY + 1.5, 18, 9, 2, C.greenBg);
+    doc.setFontSize(9);
     doc.setTextColor(C.green[0], C.green[1], C.green[2]);
     doc.setFont('helvetica', 'bold');
-    doc.text(`${pct}%`, PW - M - 13, y + 11.5, { align: 'center' });
+    doc.text(`${pct}%`, imgX + imgW - 11, imgY + 8, { align: 'center' });
 
     doc.setFontSize(5);
     doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
     doc.setFont('helvetica', 'normal');
     doc.text('YOUR BEST MATCH', M + 23, y + 9);
 
-    doc.setFontSize(15);
+    doc.setFontSize(13);
     doc.setTextColor(C.dark[0], C.dark[1], C.dark[2]);
     doc.setFont('helvetica', 'bold');
-    doc.text(`${shoe.brand} ${shoe.model}`, M + 23, y + 17);
+    const nameLines = doc.splitTextToSize(`${shoe.brand} ${shoe.model}`, leftRight - (M + 23));
+    doc.text(nameLines.slice(0, 2), M + 23, y + 16);
 
     doc.setFontSize(10);
     doc.setTextColor(C.red[0], C.red[1], C.red[2]);
@@ -492,42 +504,52 @@ export async function generateResultsPDF(data: PDFData) {
     doc.setFontSize(6);
     doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
     doc.setFont('helvetica', 'normal');
-    doc.text(`${shoe.weightGrams}g  |  ${shoe.dropMM}mm drop  |  Cushioning: ${shoe.cushioning}/10`, M + 42, y + 24);
+    doc.text(`${shoe.weightGrams}g  |  ${shoe.dropMM}mm drop  |  Cushion: ${shoe.cushioning}/10`, M + 42, y + 24);
 
-    // Highlights
+    // Highlights (left column only)
     const hlY = y + 30;
-    shoe.highlights.forEach((h, i) => {
+    const hlMax = leftRight - (M + 14) - 2;
+    shoe.highlights.slice(0, 3).forEach((h, i) => {
       doc.setFillColor(C.green[0], C.green[1], C.green[2]);
-      doc.circle(M + 10, hlY + i * 5.5, 1, 'F');
+      doc.circle(M + 10, hlY + i * 5, 1, 'F');
       doc.setFontSize(6.5);
       doc.setTextColor(C.text[0], C.text[1], C.text[2]);
       doc.setFont('helvetica', 'normal');
-      doc.text(h, M + 14, hlY + i * 5.5 + 1);
+      const hLines = doc.splitTextToSize(h, hlMax);
+      doc.text(hLines[0], M + 14, hlY + i * 5 + 1);
     });
 
-    // Match reasons
-    const reasonsX = M + CW / 2 + 5;
-    rotation.primary.reasons.slice(0, 4).forEach((r, i) => {
+    // Top match reasons (compact, below highlights)
+    const reasonsY = hlY + 3 * 5 + 2;
+    doc.setFontSize(5);
+    doc.setTextColor(C.red[0], C.red[1], C.red[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.text('WHY IT MATCHES YOU', M + 8, reasonsY);
+    rotation.primary.reasons.slice(0, 2).forEach((r, i) => {
       doc.setFillColor(C.red[0], C.red[1], C.red[2]);
-      doc.circle(reasonsX, hlY + i * 5.5, 1, 'F');
-      doc.setFontSize(6.5);
+      doc.circle(M + 10, reasonsY + 4 + i * 4.5, 0.9, 'F');
+      doc.setFontSize(6);
       doc.setTextColor(C.text[0], C.text[1], C.text[2]);
       doc.setFont('helvetica', 'normal');
-      doc.text(r, reasonsX + 4, hlY + i * 5.5 + 1);
+      const rLines = doc.splitTextToSize(r, hlMax);
+      doc.text(rLines[0], M + 14, reasonsY + 4 + i * 4.5 + 1);
     });
 
-    // Amazon button
-    rr(doc, PW - M - 44, y + 44, 40, 9, 3, C.red);
-    doc.setFontSize(7);
+    // Amazon button — sits below image
+    const btnW = 40;
+    const btnX = imgX + (imgW - btnW) / 2;
+    const btnY = y + cardH - 7.5;
+    rr(doc, btnX, btnY, btnW, 6.5, 2, C.red);
+    doc.setFontSize(6.5);
     doc.setTextColor(255, 255, 255);
     doc.setFont('helvetica', 'bold');
-    doc.text('BUY ON AMAZON', PW - M - 24, y + 50, { align: 'center' });
-    doc.link(PW - M - 44, y + 44, 40, 9, { url: amazonLink(shoe.brand, shoe.model) });
+    doc.text('BUY ON AMAZON', btnX + btnW / 2, btnY + 4.4, { align: 'center' });
+    doc.link(btnX, btnY, btnW, 6.5, { url: amazonLink(shoe.brand, shoe.model) });
 
-    // Review link
-    link(doc, M + 8, y + 53, 'Read Full Review on GearUpToFit', shoe.reviewURL, 6);
+    // Review link bottom-left
+    link(doc, M + 8, y + cardH - 3, 'Read Full Review on GearUpToFit', shoe.reviewURL, 5.5);
 
-    y += 62;
+    y += cardH + 6;
   }
 
   // ── Why This Match Works ──
