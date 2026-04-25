@@ -10,9 +10,10 @@ interface QuizStepContentProps {
   answers: QuizAnswers;
   setAnswer: (key: string, value: string | number | string[]) => void;
   handleMultiSelect: (stepId: string, value: string) => void;
+  onAutoAdvance?: () => void;
 }
 
-const QuizStepContent = ({ step, answers, setAnswer, handleMultiSelect }: QuizStepContentProps) => {
+const QuizStepContent = ({ step, answers, setAnswer, handleMultiSelect, onAutoAdvance }: QuizStepContentProps) => {
   const [brandSearch, setBrandSearch] = useState('');
 
   const filteredBrands = useMemo(() => {
@@ -46,26 +47,27 @@ const QuizStepContent = ({ step, answers, setAnswer, handleMultiSelect }: QuizSt
 
   return (
     <div>
-      {/* Step Image */}
+      {/* Step Image — full editorial-style hero */}
       {step.image && (
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-6 -mx-4 md:mx-0"
+          className="mb-5 md:mb-7 -mx-4 md:mx-0"
         >
-          <div className="relative rounded-none md:rounded-2xl overflow-hidden h-[140px] md:h-[180px]">
+          <div className="relative rounded-none md:rounded-2xl overflow-hidden bg-card/40 ring-1 ring-border/30 shadow-2xl shadow-primary/5 aspect-[16/8] md:aspect-[16/7] max-h-[260px] md:max-h-[320px]">
             <img
               src={step.image}
               alt={step.title}
-              className="w-full h-full object-cover"
-              loading="lazy"
-              width={800}
-              height={512}
+              className="w-full h-full object-cover object-center"
+              loading="eager"
+              decoding="async"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-background via-background/40 to-transparent" />
+            {/* Subtle bottom gradient for the step badge only — keeps imagery visible */}
+            <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-background/90 via-background/30 to-transparent pointer-events-none" />
             <div className="absolute bottom-3 left-4 md:left-5">
-              <span className="text-xs font-bold uppercase tracking-[0.2em] text-primary/80">
+              <span className="inline-flex items-center gap-1.5 text-[10px] md:text-xs font-bold uppercase tracking-[0.2em] text-primary bg-background/70 backdrop-blur-md border border-primary/30 px-2.5 py-1 rounded-full">
+                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
                 Step {(['footType','pronation','weeklyMileage','distance','terrain','paceGoal','injuries','brand','budget'].indexOf(step.id) + 1)} of 9
               </span>
             </div>
@@ -262,16 +264,18 @@ const QuizStepContent = ({ step, answers, setAnswer, handleMultiSelect }: QuizSt
         </div>
       )}
 
-      {/* Options (single & multi) */}
+      {/* Options (single & multi) — premium responsive grid */}
       {(step.type === 'single' || step.type === 'multi') && step.options && (
         <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="show"
-          className={`grid gap-3 ${
+          className={`grid gap-2.5 md:gap-3 ${
             step.options.length <= 4
-              ? 'grid-cols-1 sm:grid-cols-2'
-              : 'grid-cols-2 sm:grid-cols-3'
+              ? 'grid-cols-2'
+              : step.options.length <= 6
+                ? 'grid-cols-2 sm:grid-cols-3'
+                : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-3'
           }`}
         >
           {step.options.map(option => {
@@ -288,14 +292,18 @@ const QuizStepContent = ({ step, answers, setAnswer, handleMultiSelect }: QuizSt
                     handleMultiSelect(step.id, option.value);
                   } else {
                     setAnswer(step.id, option.value);
+                    // Auto-advance after a beat so the user sees the selection animation
+                    if (onAutoAdvance) {
+                      setTimeout(() => onAutoAdvance(), 280);
+                    }
                   }
                 }}
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.97 }}
-                className={`relative flex flex-col items-start p-4 md:p-5 rounded-2xl border-2 transition-all text-left group overflow-hidden ${
+                className={`relative flex flex-col items-center justify-center text-center p-3 md:p-5 rounded-2xl border-2 transition-all group overflow-hidden min-h-[110px] md:min-h-[140px] ${
                   isSelected
-                    ? 'border-primary bg-primary/10 glow-primary-sm'
-                    : 'border-border/50 bg-card/40 hover:border-muted-foreground/30 hover:bg-card/70'
+                    ? 'border-primary bg-primary/10 glow-primary-sm shadow-lg shadow-primary/20'
+                    : 'border-border/50 bg-card/40 hover:border-primary/40 hover:bg-card/70'
                 }`}
               >
                 {isSelected && <div className="absolute inset-0 shimmer pointer-events-none" />}
@@ -305,20 +313,20 @@ const QuizStepContent = ({ step, answers, setAnswer, handleMultiSelect }: QuizSt
                     initial={{ scale: 0, rotate: -180 }}
                     animate={{ scale: 1, rotate: 0 }}
                     transition={{ type: 'spring', stiffness: 500, damping: 25 }}
-                    className="absolute top-3 right-3 w-6 h-6 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/30"
+                    className="absolute top-2 right-2 w-5 h-5 md:w-6 md:h-6 rounded-full bg-primary flex items-center justify-center shadow-lg shadow-primary/40 z-10"
                   >
-                    <Check className="w-3.5 h-3.5 text-primary-foreground" />
+                    <Check className="w-3 h-3 md:w-3.5 md:h-3.5 text-primary-foreground" strokeWidth={3} />
                   </motion.div>
                 )}
 
                 {option.icon && (
-                  <span className="text-2xl md:text-3xl mb-2 group-hover:scale-110 transition-transform duration-300">
+                  <span className={`text-3xl md:text-4xl mb-2 transition-transform duration-300 ${isSelected ? 'scale-110' : 'group-hover:scale-110'}`}>
                     {option.icon}
                   </span>
                 )}
-                <span className="font-bold text-sm md:text-base">{option.label}</span>
+                <span className="font-bold text-xs md:text-sm leading-tight">{option.label}</span>
                 {option.description && (
-                  <span className="text-[11px] md:text-xs text-muted-foreground mt-1 leading-relaxed">
+                  <span className="text-[10px] md:text-xs text-muted-foreground mt-1 leading-snug line-clamp-2">
                     {option.description}
                   </span>
                 )}

@@ -54,15 +54,15 @@ const Index = () => {
     return !!val;
   };
 
-  const handleNext = () => {
-    if (currentStep < quizSteps.length - 1) {
-      setCurrentStep(prev => prev + 1);
-    } else {
+  const handleNext = useCallback(() => {
+    setCurrentStep(prev => {
+      if (prev < quizSteps.length - 1) return prev + 1;
       const slug = generateSlug(answers);
       const encoded = encodeAnswers(answers);
       navigate(`/app/runmatch/${slug}?d=${encoded}`);
-    }
-  };
+      return prev;
+    });
+  }, [answers, navigate]);
 
   const handleBack = () => {
     setCurrentStep(prev => Math.max(-1, prev - 1));
@@ -112,6 +112,7 @@ const Index = () => {
                 answers={answers}
                 setAnswer={setAnswer}
                 handleMultiSelect={handleMultiSelect}
+                onAutoAdvance={step.type === 'single' ? handleNext : undefined}
               />
             </motion.div>
           </AnimatePresence>
@@ -150,6 +151,7 @@ const Index = () => {
         onNext={handleNext}
         canProceed={canProceed()}
         isLast={isLast}
+        hideNext={step.type === 'single'}
       />
     </div>
   );

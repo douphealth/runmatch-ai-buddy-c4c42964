@@ -17,12 +17,31 @@ import path from 'node:path';
 const SHOES_TS = 'src/lib/shoe-database.ts';
 const OUT_DIR = 'public/images/shoes';
 
-// Prefer manufacturer + premium retailer domains for clean product shots
+// Prefer clean white-background product shots from major retail CDNs first
 const PREFERRED_DOMAINS = [
+  // Tier 1 — almost always clean transparent / white-bg product photos
+  'media-amazon.com', 'images-na.ssl-images-amazon.com', 'm.media-amazon.com',
+  'zappos.com', 'zappos1.com', 'zappos2.com',
+  'runningwarehouse.com', 'runningwarehouse-staging.com',
+  'roadrunnersports.com', 'fleetfeet.com', 'jackrabbit.com',
+  // Tier 2 — manufacturer storefronts (often clean shots)
   'nike.com', 'brooksrunning.com', 'asics.com', 'hoka.com', 'sauconyshop.com', 'saucony.com',
   'on-running.com', 'on.com', 'adidas.com', 'puma.com', 'newbalance.com', 'salomon.com',
-  'altrarunning.com', 'mizunousa.com', 'mizuno.com', 'roadrunnersports.com', 'fleetfeet.com',
-  'runningwarehouse.com', 'rei.com', 'dickssportinggoods.com', 'zappos.com', 'jackrabbit.com',
+  'altrarunning.com', 'mizunousa.com', 'mizuno.com',
+  'rei.com', 'dickssportinggoods.com',
+];
+
+// Extra-clean CDN paths — strongly bonus
+const CLEAN_CDN_PATTERNS = [
+  'media-amazon.com', 'm.media-amazon.com', 'images-na.ssl-images-amazon.com',
+  'zappos', 'runningwarehouse',
+];
+
+// Penalize collages, marketing banners, lifestyle shots
+const BAD_KEYWORDS = [
+  'banner', 'lifestyle', 'collage', 'campaign', 'hero', 'background',
+  'feature', 'detail', 'tech', 'guide', 'review', 'comparison',
+  'on-foot', 'onfoot', 'wearing', 'runner', 'athlete', 'model',
 ];
 
 const UA = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15';
@@ -60,14 +79,28 @@ function rankImage(img) {
   const url = (img.image || '').toLowerCase();
   const src = (img.url || img.source || '').toLowerCase();
   let score = 0;
-  for (const d of PREFERRED_DOMAINS) {
-    if (src.includes(d) || url.includes(d)) { score += 100; break; }
+  let tier = 999;
+  for (let i = 0; i < PREFERRED_DOMAINS.length; i++) {
+    const d = PREFERRED_DOMAINS[i];
+    if (src.includes(d) || url.includes(d)) { tier = i; break; }
   }
+  // Tiered preference: lower tier index = bigger bonus
+  if (tier < 999) score += 200 - tier * 5;
+  // Extra clean-CDN bonus
+  for (const p of CLEAN_CDN_PATTERNS) {
+    if (url.includes(p) || src.includes(p)) { score += 80; break; }
+  }
+  // Penalize collage/banner/lifestyle keywords in URL
+  for (const k of BAD_KEYWORDS) {
+    if (url.includes(k) || src.includes(k)) score -= 60;
+  }
+  // Squarish images = product shot; very wide = collage/banner
   if (img.width && img.height) {
-    if (img.width >= 800 && img.height >= 600) score += 30;
-    else if (img.width >= 500) score += 15;
-    // Slight bonus for landscape product shots
-    if (img.width >= img.height) score += 5;
+    const ratio = img.width / img.height;
+    if (ratio > 0.7 && ratio < 1.5) score += 40;
+    else if (ratio > 2 || ratio < 0.4) score -= 80;
+    if (img.width >= 800 && img.width <= 2000) score += 25;
+    if (img.width > 2400) score -= 30; // huge banners
   }
   if (url.endsWith('.jpg') || url.endsWith('.jpeg') || url.endsWith('.png') || url.endsWith('.webp')) score += 10;
   if (url.includes('logo') || url.includes('icon') || url.includes('thumb')) score -= 50;
@@ -88,18 +121,21 @@ async function downloadImage(url, dest) {
   return buf.length;
 }
 
-async function processShoe(brand, model) {
+async function processShoe(brand, model, force = false) {
   const slug = shoeSlug(brand, model);
   const dest = path.join(OUT_DIR, `${slug}.jpg`);
-  try {
-    const stat = await fs.stat(dest);
-    if (stat.size > 4000) return { brand, model, slug, skipped: true };
-  } catch {}
+  if (!force) {
+    try {
+      const stat = await fs.stat(dest);
+      if (stat.size > 4000) return { brand, model, slug, skipped: true };
+    } catch {}
+  }
 
   const queries = [
-    `${brand} ${model} running shoe official product`,
-    `${brand} ${model} running shoe white background`,
-    `${brand} ${model} running shoes`,
+    `"${brand} ${model}" running shoe white background -gel -styling -hair`,
+    `${brand} ${model} running shoe product photo side view`,
+    `${brand} ${model} running shoes review`,
+    `${brand} ${model} runners`,
   ];
 
   let lastErr;
@@ -126,16 +162,17 @@ async function processShoe(brand, model) {
 
 async function main() {
   await fs.mkdir(OUT_DIR, { recursive: true });
+  const force = process.argv.includes('--force');
   const ts = await fs.readFile(SHOES_TS, 'utf8');
   const shoes = [...ts.matchAll(/brand:\s*'([^']+)',\s*model:\s*'([^']+)'/g)].map(m => ({ brand: m[1], model: m[2] }));
-  console.log(`Found ${shoes.length} shoes. Output → ${OUT_DIR}`);
+  console.log(`Found ${shoes.length} shoes. Output → ${OUT_DIR}${force ? ' (FORCE re-download)' : ''}`);
 
   const results = [];
   let i = 0;
   for (const s of shoes) {
     i++;
     process.stdout.write(`[${i}/${shoes.length}] ${s.brand} ${s.model}... `);
-    const r = await processShoe(s.brand, s.model);
+    const r = await processShoe(s.brand, s.model, force);
     results.push(r);
     if (r.skipped) console.log('cached');
     else if (r.ok) console.log(`✓ ${(r.size / 1024).toFixed(0)}kb`);
