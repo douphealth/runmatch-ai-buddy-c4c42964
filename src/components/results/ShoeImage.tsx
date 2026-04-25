@@ -46,10 +46,12 @@ const ShoeImage = ({ brand, model, imageURL, amazonASIN: _asin, size = 'md', cla
   const showRealImage = resolved.url && !imgError;
 
   return (
-    <div className={`relative w-full ${s.container} rounded-xl overflow-hidden bg-gradient-to-br from-card via-card to-secondary/20 border border-border/40 ${className}`}>
-      {/* Soft brand-colored glow behind shoe — gives the transparent look depth */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${accent} opacity-60 mix-blend-screen`} />
-      <div className="absolute inset-x-4 bottom-2 h-3 bg-black/40 blur-xl rounded-full" />
+    <div className={`relative w-full ${s.container} rounded-xl overflow-hidden border border-border/40 ${className}`}
+         style={{ background: 'radial-gradient(ellipse at center, #ffffff 0%, #f1f5f9 55%, #e2e8f0 100%)' }}>
+      {/* Soft brand-colored glow behind shoe */}
+      <div className={`absolute inset-0 bg-gradient-to-br ${accent} opacity-40 pointer-events-none`} />
+      {/* Floor shadow */}
+      <div className="absolute inset-x-6 bottom-2 h-3 bg-black/30 blur-xl rounded-full" />
 
       {showRealImage ? (
         <img
@@ -57,8 +59,8 @@ const ShoeImage = ({ brand, model, imageURL, amazonASIN: _asin, size = 'md', cla
           alt={`${brand} ${model} running shoe`}
           loading="lazy"
           onError={() => setImgError(true)}
-          className="absolute inset-0 w-full h-full object-contain p-2 drop-shadow-[0_10px_25px_rgba(0,0,0,0.45)] mix-blend-screen-fallback"
-          style={{ mixBlendMode: 'multiply', filter: 'contrast(1.05) saturate(1.05)' }}
+          className="absolute inset-0 w-full h-full object-contain p-3 drop-shadow-[0_12px_18px_rgba(0,0,0,0.25)]"
+          style={{ filter: 'contrast(1.08) saturate(1.15) brightness(1.02)' }}
         />
       ) : (
         <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
