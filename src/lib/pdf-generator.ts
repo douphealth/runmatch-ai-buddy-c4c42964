@@ -763,119 +763,109 @@ export async function generateResultsPDF(data: PDFData) {
 
   // ── Premium CTA Block ──
   y += 6;
-  const ctaH = 60;
+  const ctaH = 64;
+  const gold: RGB = [198, 161, 86];
+  const goldSoft: RGB = [232, 200, 130];
+  const ink: RGB = [18, 12, 14];
+  const inkSoft: RGB = [42, 26, 30];
 
-  // Outer subtle frame (creates depth/shadow illusion)
-  rr(doc, M - 0.4, y - 0.4, CW + 0.8, ctaH + 0.8, 5, [60, 8, 8] as RGB);
+  // Outer hairline shadow
+  rr(doc, M - 0.5, y - 0.5, CW + 1, ctaH + 1, 5.4, [0, 0, 0] as RGB);
 
-  // Main dark card
-  const dark1: RGB = [22, 14, 16];
-  rr(doc, M, y, CW, ctaH, 5, dark1);
+  // Main solid deep-ink card (no gradient banding)
+  rr(doc, M, y, CW, ctaH, 5, ink);
 
-  // Layered red gradient bands (faux gradient via stacked rects)
-  const bands = 18;
-  for (let i = 0; i < bands; i++) {
-    const t = i / (bands - 1);
-    const r = Math.round(40 + (200 - 40) * t * 0.55);
-    const g = Math.round(14 + (30 - 14) * t * 0.4);
-    const b = Math.round(16 + (30 - 16) * t * 0.4);
-    doc.setFillColor(r, g, b);
-    const bandW = (CW * 0.55) / bands;
-    doc.rect(M + CW * 0.45 + i * bandW, y, bandW + 0.3, ctaH, 'F');
+  // Subtle right-side warm accent (single soft block, well within rounded corners)
+  const accentX = M + CW - 70;
+  rr(doc, accentX, y + 1.5, 67, ctaH - 3, 4, inkSoft);
+
+  // Inner gold hairline frame
+  doc.setDrawColor(gold[0], gold[1], gold[2]);
+  doc.setLineWidth(0.25);
+  if (typeof (doc as any).roundedRect === 'function') {
+    (doc as any).roundedRect(M + 2.5, y + 2.5, CW - 5, ctaH - 5, 3.5, 3.5, 'S');
   }
 
-  // Re-apply rounded mask edges (top-right + bottom-right corners)
-  rr(doc, M, y, CW, ctaH, 5, dark1);
-  // Now overlay gradient inside rounded clip using a slightly inset rect approach:
-  // draw an inset gradient that won't escape rounded corners visually
-  for (let i = 0; i < bands; i++) {
-    const t = i / (bands - 1);
-    const r = Math.round(60 + (210 - 60) * Math.pow(t, 1.2));
-    const g = Math.round(18 + (40 - 18) * t);
-    const b = Math.round(20 + (40 - 20) * t);
-    doc.setFillColor(r, g, b);
-    const bandW = (CW * 0.6) / bands;
-    const bx = M + CW * 0.42 + i * bandW;
-    // Skip drawing past right edge curve
-    if (bx + bandW < M + CW - 2) {
-      doc.rect(bx, y + 2, bandW + 0.4, ctaH - 4, 'F');
-    } else {
-      doc.rect(bx, y + 4, Math.max(0, M + CW - 4 - bx), ctaH - 8, 'F');
-    }
-  }
-
-  // Decorative thin gold rule (top accent)
-  doc.setFillColor(212, 175, 90);
-  doc.rect(M + 14, y + 8, 28, 0.4, 'F');
-  doc.rect(PW - M - 14 - 28, y + 8, 28, 0.4, 'F');
+  // Top + bottom gold hairlines flanking the kicker
+  const kickerY = y + 12;
+  doc.setFillColor(gold[0], gold[1], gold[2]);
+  doc.rect(M + 18, kickerY - 1.4, 22, 0.3, 'F');
+  doc.rect(PW - M - 18 - 22, kickerY - 1.4, 22, 0.3, 'F');
 
   // Eyebrow / kicker
   doc.setFontSize(6);
-  doc.setTextColor(212, 175, 90);
+  doc.setTextColor(goldSoft[0], goldSoft[1], goldSoft[2]);
   doc.setFont('helvetica', 'bold');
-  doc.text('— THE GEARUPTOFIT MANIFESTO —', PW / 2, y + 13, { align: 'center', charSpace: 0.6 } as any);
+  doc.text('THE GEARUPTOFIT MANIFESTO', PW / 2, kickerY, { align: 'center', charSpace: 1.2 } as any);
 
-  // Headline
-  doc.setFontSize(18);
+  // Headline — single line, generous tracking
+  doc.setFontSize(20);
   doc.setTextColor(255, 255, 255);
   doc.setFont('helvetica', 'bold');
-  doc.text('GEAR UP.  SHOW UP.  LEVEL UP.', PW / 2, y + 23, { align: 'center', charSpace: 0.4 } as any);
+  doc.text('GEAR UP.   SHOW UP.   LEVEL UP.', PW / 2, y + 24, { align: 'center', charSpace: 0.6 } as any);
 
-  // Subhead divider dots
-  doc.setFillColor(212, 175, 90);
-  doc.circle(PW / 2 - 22, y + 28, 0.5, 'F');
-  doc.circle(PW / 2, y + 28, 0.5, 'F');
-  doc.circle(PW / 2 + 22, y + 28, 0.5, 'F');
+  // Ornamental divider: thin gold rule with center diamond
+  const divY = y + 30;
+  doc.setFillColor(gold[0], gold[1], gold[2]);
+  doc.rect(PW / 2 - 38, divY, 30, 0.25, 'F');
+  doc.rect(PW / 2 + 8, divY, 30, 0.25, 'F');
+  // Center diamond
+  doc.setFillColor(goldSoft[0], goldSoft[1], goldSoft[2]);
+  const dx = PW / 2, dy = divY;
+  doc.triangle(dx - 1.6, dy, dx, dy - 1.4, dx + 1.6, dy, 'F');
+  doc.triangle(dx - 1.6, dy, dx, dy + 1.4, dx + 1.6, dy, 'F');
 
   // Tagline
-  doc.setFontSize(7);
+  doc.setFontSize(7.5);
   doc.setTextColor(220, 215, 210);
   doc.setFont('helvetica', 'normal');
-  doc.text('Expert running gear reviews · personalized training plans · pro-grade guides', PW / 2, y + 34, { align: 'center' });
+  doc.text('Expert gear reviews  ·  Personalized training plans  ·  Pro-grade running guides', PW / 2, y + 36, { align: 'center' });
 
-  // Premium pill button (white) with gold accent border feel
-  const btnW = 64, btnH = 11, btnX = PW / 2 - btnW / 2, btnY = y + 40;
-  // Gold underglow
-  rr(doc, btnX - 0.6, btnY - 0.6, btnW + 1.2, btnH + 1.2, 5.5, [212, 175, 90] as RGB);
+  // Premium pill button
+  const btnW = 70, btnH = 12, btnX = PW / 2 - btnW / 2, btnY = y + 42;
+  // Gold ring
+  rr(doc, btnX - 0.7, btnY - 0.7, btnW + 1.4, btnH + 1.4, 6.2, gold);
   // White button
-  rr(doc, btnX, btnY, btnW, btnH, 5, C.white);
+  rr(doc, btnX, btnY, btnW, btnH, 5.5, C.white);
 
-  // Arrow marker
-  doc.setFillColor(C.red[0], C.red[1], C.red[2]);
-  doc.circle(btnX + 8, btnY + btnH / 2, 1.6, 'F');
-  doc.setFontSize(7);
-  doc.setTextColor(255, 255, 255);
-  doc.setFont('helvetica', 'bold');
-  doc.text('>', btnX + 8, btnY + btnH / 2 + 1, { align: 'center' });
-
-  doc.setFontSize(8);
+  // CTA text — perfectly centered
+  doc.setFontSize(9);
   doc.setTextColor(C.dark[0], C.dark[1], C.dark[2]);
   doc.setFont('helvetica', 'bold');
-  doc.text('VISIT  GEARUPTOFIT.COM', btnX + btnW / 2 + 4, btnY + btnH / 2 + 1.2, { align: 'center', charSpace: 0.5 } as any);
+  doc.text('VISIT  GEARUPTOFIT.COM', btnX + btnW / 2, btnY + btnH / 2 + 1.3, { align: 'center', charSpace: 0.7 } as any);
+
+  // Tiny red arrow on the right of the button
+  doc.setFillColor(C.red[0], C.red[1], C.red[2]);
+  const arrX = btnX + btnW - 7, arrY = btnY + btnH / 2;
+  doc.triangle(arrX, arrY - 1.6, arrX + 2.2, arrY, arrX, arrY + 1.6, 'F');
+
   doc.link(btnX, btnY, btnW, btnH, { url: 'https://gearuptofit.com/' });
 
-  // Footer micro-line inside CTA
+  // Trust micro-line
   doc.setFontSize(5);
-  doc.setTextColor(150, 145, 140);
+  doc.setTextColor(160, 150, 145);
   doc.setFont('helvetica', 'normal');
-  doc.text('TRUSTED BY RUNNERS WORLDWIDE  ·  EST. GEARUPTOFIT  ·  RUNMATCH AI', PW / 2, y + 56, { align: 'center', charSpace: 0.8 } as any);
+  doc.text('TRUSTED BY RUNNERS WORLDWIDE   ·   EST. GEARUPTOFIT   ·   POWERED BY RUNMATCH AI', PW / 2, y + 60, { align: 'center', charSpace: 1.2 } as any);
 
-  // Logo: small monogram top-left of card
+  // Left monogram (logo in white circle chip)
   if (logoData) {
     try {
-      // White rounded chip behind logo
-      rr(doc, M + 6, y + 6, 12, 12, 6, C.white);
-      doc.addImage(logoData, 'PNG', M + 7, y + 7, 10, 10);
+      rr(doc, M + 6, y + 6, 13, 13, 6.5, C.white);
+      doc.addImage(logoData, 'PNG', M + 7, y + 7, 11, 11);
     } catch {}
   }
 
-  // Right-side seal
-  rr(doc, PW - M - 18, y + 6, 12, 12, 6, [212, 175, 90] as RGB);
+  // Right gold seal
+  rr(doc, PW - M - 19, y + 6, 13, 13, 6.5, gold);
   doc.setFontSize(5);
-  doc.setTextColor(22, 14, 16);
+  doc.setTextColor(ink[0], ink[1], ink[2]);
   doc.setFont('helvetica', 'bold');
-  doc.text('PRO', PW - M - 12, y + 10.5, { align: 'center' });
-  doc.text('2026', PW - M - 12, y + 14, { align: 'center' });
+  doc.text('PRO', PW - M - 12.5, y + 10.5, { align: 'center', charSpace: 0.4 } as any);
+  // Hairline divider in seal
+  doc.setFillColor(ink[0], ink[1], ink[2]);
+  doc.rect(PW - M - 16, y + 12, 7, 0.2, 'F');
+  doc.text('2026', PW - M - 12.5, y + 14.7, { align: 'center', charSpace: 0.4 } as any);
+
 
   addFooter(doc, 4, totalPages);
 
