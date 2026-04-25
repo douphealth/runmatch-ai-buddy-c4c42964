@@ -43,14 +43,15 @@ const ShoeComparisonTable = ({ shoes, getAmazonLink }: ShoeComparisonTableProps)
             <td className="py-3 px-2 font-medium text-muted-foreground align-top">Image</td>
             {shoes.slice(0, 5).map((s) => (
               <td key={s.shoe.id} className="py-3 px-2">
-                <div className="w-24 mx-auto">
+                <div className="w-28 md:w-32 h-28 md:h-32 mx-auto">
                   <ShoeImage
                     brand={s.shoe.brand}
                     model={s.shoe.model}
                     imageURL={s.shoe.imageURL}
                     amazonASIN={s.shoe.amazonASIN}
                     size="sm"
-                    showSourceBadge={true}
+                    showSourceBadge={false}
+                    className="!h-full"
                   />
                 </div>
               </td>
