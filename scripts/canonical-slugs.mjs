@@ -11,7 +11,7 @@
  * SPA shell and React renders client-side from the slug.
  */
 
-export const CANONICAL_SLUGS: string[] = [
+export const CANONICAL_SLUGS = [
   // === Distance × Terrain (broad searcher intent) ===
   'neutral-5k-road-neutral',
   'neutral-10k-road-neutral',
@@ -60,11 +60,7 @@ export const CANONICAL_SLUGS: string[] = [
   'neutral-10k-trail-high-arch',
   'neutral-marathon-trail-high-arch',
   'neutral-ultra-trail-high-arch',
-  'neutral-marathon-road-wide',
   'overpronation-marathon-road-wide',
-  'neutral-half-marathon-trail-neutral',
-  'neutral-mixed-road-neutral',
-  'neutral-mixed-trail-neutral',
 
   // === Track / speed-focused ===
   'neutral-5k-track-neutral',
