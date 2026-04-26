@@ -341,12 +341,24 @@ const RunMatchResult = () => {
                   })()}
 
                   {/* Shoe spec pills */}
-                  <div className="flex flex-wrap gap-2 mb-4">
+                  <div className="flex flex-wrap gap-2 mb-3">
                     <Badge variant="secondary" className="text-xs gap-1"><Gauge className="w-3 h-3" /> {primary.shoe.cushioning}/10 Cushion</Badge>
                     <Badge variant="secondary" className="text-xs gap-1"><Activity className="w-3 h-3" /> {primary.shoe.dropMM}mm Drop</Badge>
                     <Badge variant="secondary" className="text-xs gap-1"><Timer className="w-3 h-3" /> {primary.shoe.weightGrams}g</Badge>
                     {primary.shoe.widthOptions && <Badge variant="secondary" className="text-xs">Wide Fit Available</Badge>}
                   </div>
+
+                  {/* Verified spec source — defensibility chip */}
+                  <a
+                    href={getManufacturerSourceURL(primary.shoe)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1.5 text-[11px] text-muted-foreground hover:text-primary transition-colors mb-4"
+                  >
+                    <ShieldCheck className="w-3 h-3 text-primary" />
+                    <span>Specs verified · {primary.shoe.lastVerified ?? SHOE_DATABASE_LAST_UPDATED_LABEL} · {primary.shoe.brand} source</span>
+                    <ExternalLink className="w-2.5 h-2.5" />
+                  </a>
 
                   <div className="flex flex-wrap gap-2 mb-4">
                     {primary.shoe.highlights.map(h => (
