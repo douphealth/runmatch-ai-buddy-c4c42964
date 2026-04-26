@@ -244,7 +244,7 @@ const RunMatchResult = () => {
               {rec.shoeProfile.summary}
             </p>
 
-            <div className="mt-6 flex justify-center">
+            <div className="mt-6 flex flex-col items-center gap-3">
               <Button
                 onClick={handleDownloadPDF}
                 size="lg"
@@ -253,7 +253,15 @@ const RunMatchResult = () => {
                 <Download className="w-4 h-4 mr-2 group-hover:animate-bounce" />
                 Download PDF Report
               </Button>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
+                Database verified · {SHOE_DATABASE_LAST_UPDATED_LABEL}
+              </p>
             </div>
+          </div>
+
+          {/* FTC affiliate disclosure — required near affiliate CTAs */}
+          <div className="max-w-3xl mx-auto mb-6">
+            <AffiliateDisclosure variant="banner" />
           </div>
 
           {/* Runner Profile: Radar + Stats */}
