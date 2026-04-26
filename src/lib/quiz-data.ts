@@ -169,6 +169,50 @@ export function generateSlug(answers: QuizAnswers): string {
   return parts.join('-');
 }
 
+// Reconstruct a complete QuizAnswers object from a slug alone, using sensible
+// defaults for unencoded fields. Powers SEO pre-rendering and direct slug
+// visits when no ?d= payload is present (e.g. shared search-engine results).
+const VALID_PRONATION = new Set(['neutral', 'overpronation', 'underpronation', 'unsure']);
+const VALID_DISTANCE = new Set(['5k', '10k', 'half-marathon', 'marathon', 'ultra', 'mixed']);
+const VALID_TERRAIN = new Set(['road', 'trail', 'track', 'mixed']);
+const VALID_FOOT = new Set(['neutral', 'flat', 'high-arch', 'wide']);
+
+export function answersFromSlug(slug: string | undefined): QuizAnswers | null {
+  if (!slug) return null;
+  // Slug shape: "{pronation}-{distance}-{terrain}-{footType}"
+  // distance can contain a hyphen (half-marathon) so parse from the ends.
+  const tokens = slug.toLowerCase().split('-').filter(Boolean);
+  if (tokens.length < 4) return null;
+
+  const pronation = tokens[0];
+  const footType = tokens[tokens.length - 1];
+  const terrain = tokens[tokens.length - 2];
+  const distance = tokens.slice(1, tokens.length - 2).join('-');
+
+  if (!VALID_PRONATION.has(pronation)) return null;
+  if (!VALID_DISTANCE.has(distance)) return null;
+  if (!VALID_TERRAIN.has(terrain)) return null;
+  if (!VALID_FOOT.has(footType)) return null;
+
+  // Sensible defaults for fields not encoded in the slug.
+  const weeklyMileage = ['marathon', 'ultra'].includes(distance) ? 60
+    : distance === 'half-marathon' ? 45
+    : distance === '10k' ? 30
+    : 20;
+
+  return {
+    footType,
+    pronation,
+    weeklyMileage,
+    distance,
+    terrain,
+    paceGoal: 'moderate',
+    injuries: [],
+    brand: [],
+    budget: ['under-100', '100-150', '150-200', '200-plus'],
+  };
+}
+
 export function encodeAnswers(answers: QuizAnswers): string {
   return btoa(JSON.stringify(answers));
 }

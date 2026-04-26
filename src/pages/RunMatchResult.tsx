@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState, useCallback } from 'react';
 import { useParams, useSearchParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { decodeAnswers, QuizAnswers } from '@/lib/quiz-data';
+import { decodeAnswers, answersFromSlug, QuizAnswers } from '@/lib/quiz-data';
 import { generateRecommendation } from '@/lib/recommendation-engine';
 import { scoreShoes, buildRotation } from '@/lib/scoring-engine';
 import { getRecommendedArticles, getInjuryArticles, getToolLinks, getKitLinks } from '@/lib/article-links';
@@ -49,9 +49,14 @@ const RunMatchResult = () => {
 
   const answers: QuizAnswers | null = useMemo(() => {
     const encoded = searchParams.get('d');
-    if (encoded) return decodeAnswers(encoded);
-    return null;
-  }, [searchParams]);
+    if (encoded) {
+      const decoded = decodeAnswers(encoded);
+      if (decoded) return decoded;
+    }
+    // Fallback: reconstruct from slug so the page renders for crawlers and
+    // direct visitors even when no ?d= payload is present.
+    return answersFromSlug(slug);
+  }, [searchParams, slug]);
 
   const recommendation = useMemo(() => {
     if (!answers) return null;
