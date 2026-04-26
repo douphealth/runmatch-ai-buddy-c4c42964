@@ -516,11 +516,12 @@ export async function generateResultsPDF(data: PDFData) {
     const nameLines = doc.splitTextToSize(`${shoe.brand} ${shoe.model}`, leftRight - (M + 23));
     doc.text(nameLines.slice(0, 2), M + 23, y + 16);
 
-    // Price + meta on a clean two-line block (avoids cramped overflow)
-    doc.setFontSize(11);
+    // Compliance: show MSRP tier, never a hard-coded price.
+    const tierLabel = (p: number) => p < 110 ? 'BUDGET' : p < 160 ? 'MID-RANGE' : p < 220 ? 'PREMIUM' : 'SUPER-PREMIUM';
+    doc.setFontSize(10);
     doc.setTextColor(C.red[0], C.red[1], C.red[2]);
     doc.setFont('helvetica', 'bold');
-    doc.text(`$${shoe.priceUSD}`, M + 23, y + 24);
+    doc.text(tierLabel(shoe.priceUSD), M + 23, y + 24);
 
     // Meta chips: weight | drop | cushion — small uppercase divider style
     doc.setFontSize(6);
@@ -665,11 +666,12 @@ export async function generateResultsPDF(data: PDFData) {
     const nameLines = doc.splitTextToSize(`${item.shoe.shoe.brand} ${item.shoe.shoe.model}`, textRight - (M + 8));
     doc.text(nameLines.slice(0, 2), M + 8, cy + 18);
 
-    // Price + meta block
-    doc.setFontSize(10);
+    // Price + meta block — show MSRP tier instead of stale hard-coded price
+    const tierLabel2 = (p: number) => p < 110 ? 'BUDGET' : p < 160 ? 'MID' : p < 220 ? 'PREMIUM' : 'SUPER-PREMIUM';
+    doc.setFontSize(9);
     doc.setTextColor(C.red[0], C.red[1], C.red[2]);
     doc.setFont('helvetica', 'bold');
-    doc.text(`$${item.shoe.shoe.priceUSD}`, M + 8, cy + 28);
+    doc.text(tierLabel2(item.shoe.shoe.priceUSD), M + 8, cy + 28);
 
     doc.setFontSize(5.8);
     doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
