@@ -181,7 +181,7 @@ function renderTopShoes(shoes: ReturnType<typeof scoreShoes>): string {
       <td>${escapeHtml(s.shoe.brand)} ${escapeHtml(s.shoe.model)}</td>
       <td>${escapeHtml(String(s.matchPercent))}% match</td>
       <td>$${escapeHtml(String(s.shoe.priceUSD))}</td>
-      <td>${escapeHtml(s.reasons.join('; ') || s.shoe.summary || '')}</td>
+      <td>${escapeHtml(s.reasons.join('; ') || (s.shoe.highlights?.join('; ') ?? ''))}</td>
     </tr>`).join('');
   return `<table>
     <thead><tr><th>Shoe</th><th>Match</th><th>Price</th><th>Why it fits</th></tr></thead>
