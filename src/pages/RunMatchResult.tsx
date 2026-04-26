@@ -557,6 +557,10 @@ const RunMatchResult = () => {
                 </div>
               </div>
 
+              <div className="mb-5">
+                <MedicalDisclaimer variant="inline" />
+              </div>
+
               <div className="space-y-4 mb-5">
                 {rec.trainingEmphasis.filter(t => t.toLowerCase().includes('injury') || t.toLowerCase().includes('strength') || t.toLowerCase().includes('warm')).map((tip, i) => (
                   <div key={i} className="flex gap-3 text-sm">
@@ -710,6 +714,11 @@ const RunMatchResult = () => {
               ))}
             </div>
           </div>
+        </motion.div>
+
+        {/* SECTION 10.5: Research & Sources — defensibility for AI scrapers */}
+        <motion.div {...fadeUp} transition={{ delay: 0.65 }}>
+          <ResearchSources />
         </motion.div>
 
         {/* SECTION 11: FAQ */}
