@@ -34,6 +34,8 @@ const fadeUp = {
 };
 
 import { getAmazonLinkForShoe } from '@/lib/amazon-link';
+import { getPriceTier, SHOE_DATABASE_LAST_UPDATED_LABEL } from '@/lib/price-tier';
+import AffiliateDisclosure from '@/components/results/AffiliateDisclosure';
 
 // Resolves a verified direct /dp/ASIN Amazon link via SerpAPI cache,
 // keyed by the canonical shoe id. Falls back to brand-filtered search
@@ -242,7 +244,7 @@ const RunMatchResult = () => {
               {rec.shoeProfile.summary}
             </p>
 
-            <div className="mt-6 flex justify-center">
+            <div className="mt-6 flex flex-col items-center gap-3">
               <Button
                 onClick={handleDownloadPDF}
                 size="lg"
@@ -251,7 +253,15 @@ const RunMatchResult = () => {
                 <Download className="w-4 h-4 mr-2 group-hover:animate-bounce" />
                 Download PDF Report
               </Button>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-widest">
+                Database verified · {SHOE_DATABASE_LAST_UPDATED_LABEL}
+              </p>
             </div>
+          </div>
+
+          {/* FTC affiliate disclosure — required near affiliate CTAs */}
+          <div className="max-w-3xl mx-auto mb-6">
+            <AffiliateDisclosure variant="banner" />
           </div>
 
           {/* Runner Profile: Radar + Stats */}
@@ -317,7 +327,15 @@ const RunMatchResult = () => {
                 </div>
                 <div className="flex-1">
                   <h3 className="text-2xl md:text-4xl font-bold mb-1">{primary.shoe.brand} {primary.shoe.model}</h3>
-                  <p className="text-primary font-semibold text-lg mb-3">${primary.shoe.priceUSD}</p>
+                  {(() => {
+                    const t = getPriceTier(primary.shoe.priceUSD);
+                    return (
+                      <div className="flex items-center gap-2 mb-3">
+                        <Badge className="bg-primary/10 text-primary border-primary/20 text-xs font-semibold">{t.label}</Badge>
+                        <span className="text-xs text-muted-foreground">{t.range}</span>
+                      </div>
+                    );
+                  })()}
 
                   {/* Shoe spec pills */}
                   <div className="flex flex-wrap gap-2 mb-4">
@@ -350,7 +368,7 @@ const RunMatchResult = () => {
                       className="inline-flex items-center justify-center gap-2 bg-gradient-primary glow-primary text-primary-foreground font-bold uppercase tracking-wider px-6 h-12 rounded-xl hover:opacity-90 transition-all text-sm"
                     >
                       <ShoppingCart className="w-4 h-4" />
-                      Buy on Amazon — ${primary.shoe.priceUSD}
+                      Check Price on Amazon
                     </a>
                     <a
                       href={primary.shoe.reviewURL}
@@ -418,7 +436,7 @@ const RunMatchResult = () => {
                         <span className="text-[10px] bg-secondary/50 px-2 py-0.5 rounded-full">{s.shoe.shoe.dropMM}mm</span>
                         <span className="text-[10px] bg-secondary/50 px-2 py-0.5 rounded-full">{s.shoe.shoe.weightGrams}g</span>
                       </div>
-                      <p className="text-primary font-semibold text-sm mb-3">${s.shoe.shoe.priceUSD}</p>
+                      <p className="text-xs text-muted-foreground mb-3">{getPriceTier(s.shoe.shoe.priceUSD).label} · {getPriceTier(s.shoe.shoe.priceUSD).range}</p>
                       <div className="flex gap-2">
                         <a
                           href={getAmazonProductLink(s.shoe.shoe.id, s.shoe.shoe.brand, s.shoe.shoe.model, s.shoe.shoe.amazonASIN)}
@@ -752,6 +770,22 @@ const RunMatchResult = () => {
             </p>
           </div>
         </motion.div>
+
+        {/* Compliance footer: disclosure + data freshness */}
+        <div className="pt-8 pb-4 space-y-3">
+          <AffiliateDisclosure variant="footer" />
+          <p className="text-[10px] text-muted-foreground text-center uppercase tracking-widest">
+            Shoe specifications verified against manufacturer sources · Database last updated {SHOE_DATABASE_LAST_UPDATED_LABEL} ·{' '}
+            <a
+              href="https://gearuptofit.com/methodology/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline normal-case tracking-normal"
+            >
+              How we score shoes
+            </a>
+          </p>
+        </div>
       </main>
     </div>
   );
