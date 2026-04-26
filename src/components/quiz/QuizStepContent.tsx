@@ -365,11 +365,7 @@ const QuizStepContent = ({ step, answers, setAnswer, handleMultiSelect, onAutoAd
                   </motion.div>
                 )}
 
-                {option.icon && (
-                  <span className={`text-3xl md:text-4xl mb-2 transition-transform duration-300 ${isSelected ? 'scale-110' : 'group-hover:scale-110'}`}>
-                    {option.icon}
-                  </span>
-                )}
+                {option.icon && renderIcon(option.icon, isSelected)}
                 <span className="font-bold text-xs md:text-sm leading-tight">{option.label}</span>
                 {option.description && (
                   <span className="text-[10px] md:text-xs text-muted-foreground mt-1 leading-snug line-clamp-2">
