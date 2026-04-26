@@ -770,6 +770,22 @@ const RunMatchResult = () => {
             </p>
           </div>
         </motion.div>
+
+        {/* Compliance footer: disclosure + data freshness */}
+        <div className="pt-8 pb-4 space-y-3">
+          <AffiliateDisclosure variant="footer" />
+          <p className="text-[10px] text-muted-foreground text-center uppercase tracking-widest">
+            Shoe specifications verified against manufacturer sources · Database last updated {SHOE_DATABASE_LAST_UPDATED_LABEL} ·{' '}
+            <a
+              href="https://gearuptofit.com/methodology/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-primary hover:underline normal-case tracking-normal"
+            >
+              How we score shoes
+            </a>
+          </p>
+        </div>
       </main>
     </div>
   );
