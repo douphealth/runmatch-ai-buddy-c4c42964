@@ -130,7 +130,12 @@ export function scoreShoes(answers: QuizAnswers): ScoredShoe[] {
       matchPercent: Math.round(totalScore * 100),
       reasons,
     };
-  }).sort((a, b) => b.score - a.score);
+  }).sort((a, b) => {
+    if (b.score !== a.score) return b.score - a.score;
+    // Stable tiebreaker: prefer newer year, then lighter weight
+    if (b.shoe.year !== a.shoe.year) return b.shoe.year - a.shoe.year;
+    return a.shoe.weightGrams - b.shoe.weightGrams;
+  });
 }
 
 export interface ShoeRotation {
@@ -160,13 +165,9 @@ export function buildRotation(answers: QuizAnswers): ShoeRotation {
     ) || null;
   }
 
-  // For trail runners, prefer trail shoes in rotation
-  if (answers.terrain === 'trail' && primary.shoe.category !== 'trail') {
-    const trailShoe = scored.find(s => s.shoe.category === 'trail');
-    if (trailShoe) {
-      return { primary: trailShoe, speed, longRun };
-    }
-  }
+  // Note: trail terrain already heavily weighted in scoring (terrain=0.18,
+  // hybrid road shoes get only 0.15 partial credit). No override needed —
+  // forcing the first trail shoe collapsed all trail results to Speedcross 6.
 
   return { primary, speed, longRun };
 }
