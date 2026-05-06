@@ -56,7 +56,7 @@ export const shoeDatabase: Shoe[] = [
     imageURL: '/images/shoes/nike-pegasus-41.jpg',
     highlights: ['ReactX foam', 'Versatile all-rounder', 'Great for beginners'],
     sourceURL: 'https://www.nike.com/t/pegasus-41-mens-road-running-shoes-MdxBSc',
-    lastVerified: '2026-04-20',
+    lastVerified: '2026-05-04',
   },
   {
     id: 'nike-pegasus-premium',
@@ -78,6 +78,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/nike-pegasus-premium/',
     imageURL: '/images/shoes/nike-pegasus-premium.jpg',
     highlights: ['ZoomX foam', 'Premium daily trainer', 'Plush ride'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'nike-vomero-plus',
@@ -99,6 +100,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/nike-vomero-plus/',
     imageURL: '/images/shoes/nike-vomero-plus.jpg',
     highlights: ['ZoomX midsole', 'Max cushion', 'Injury-friendly'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'nike-pegasus-turbo',
@@ -120,6 +122,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/running-shoes/nike-pegasus-turbo-review/',
     imageURL: '/images/shoes/nike-pegasus-turbo.jpg',
     highlights: ['ZoomX + React', 'Lightweight', 'Speed sessions'],
+    lastVerified: '2026-05-04',
   },
   // === BROOKS ===
   {
@@ -143,7 +146,7 @@ export const shoeDatabase: Shoe[] = [
     imageURL: '/images/shoes/brooks-ghost-17.jpg',
     highlights: ['DNA LOFT v2', 'Smooth transitions', 'Classic neutral'],
     sourceURL: 'https://www.brooksrunning.com/en_us/ghost-17-mens-road-running-shoes/110441.html',
-    lastVerified: '2026-04-20',
+    lastVerified: '2026-05-04',
   },
   {
     id: 'brooks-glycerin-max-2',
@@ -165,6 +168,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/brooks-glycerin-max-2/',
     imageURL: '/images/shoes/brooks-glycerin-max-2.jpg',
     highlights: ['Nitrogen-infused foam', 'Ultra plush', 'Max stack height'],
+    lastVerified: '2026-05-04',
   },
   // === ASICS ===
   {
@@ -187,6 +191,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/asics-gel-nimbus-28/',
     imageURL: '/images/shoes/asics-gel-nimbus-28.jpg',
     highlights: ['FF BLAST PLUS ECO', 'PureGEL heel', 'Plush comfort'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'asics-gel-kayano-32',
@@ -208,6 +213,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/running-shoes/asics-mens-gel-kayano-32/',
     imageURL: '/images/shoes/asics-gel-kayano-32.jpg',
     highlights: ['4D Guidance System', 'FF BLAST PLUS', 'Premium stability'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'asics-novablast-5',
@@ -230,7 +236,7 @@ export const shoeDatabase: Shoe[] = [
     imageURL: '/images/shoes/asics-novablast-5.jpg',
     highlights: ['FF BLAST PLUS', 'Bouncy ride', 'Tempo sessions'],
     sourceURL: 'https://www.asics.com/us/en-us/novablast-5/p/1011B868.html',
-    lastVerified: '2026-04-20',
+    lastVerified: '2026-05-04',
   },
   {
     id: 'asics-novablast-4',
@@ -252,6 +258,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/asics-novablast-4/',
     imageURL: '/images/shoes/asics-novablast-4.jpg',
     highlights: ['FF BLAST PLUS', 'Versatile', 'Great value'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'asics-superblast-3',
@@ -273,6 +280,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/asics-superblast-3/',
     imageURL: '/images/shoes/asics-superblast-3.jpg',
     highlights: ['FF TURBO PLUS', 'Carbon plate', 'Super trainer'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'asics-sonicblast',
@@ -294,6 +302,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/asics-sonicblast/',
     imageURL: '/images/shoes/asics-sonicblast.jpg',
     highlights: ['Lightweight racer', 'Fast turnover', 'Track-ready'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'asics-megablast',
@@ -315,6 +324,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/asics-megablast/',
     imageURL: '/images/shoes/asics-megablast.jpg',
     highlights: ['Max stack', 'FF BLAST PLUS ECO', 'Ultra cushioned'],
+    lastVerified: '2026-05-04',
   },
   // === HOKA ===
   {
@@ -338,7 +348,7 @@ export const shoeDatabase: Shoe[] = [
     imageURL: '/images/shoes/hoka-bondi-9.jpg',
     highlights: ['Ultra-cushioned', 'Meta-Rocker', 'Recovery-friendly'],
     sourceURL: 'https://www.hoka.com/en/us/mens-road/bondi-9/1147010.html',
-    lastVerified: '2026-04-20',
+    lastVerified: '2026-05-04',
   },
   {
     id: 'hoka-cielo-x1-3',
@@ -360,6 +370,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/hoka-cielo-x1-3/',
     imageURL: '/images/shoes/hoka-cielo-x1-3.jpg',
     highlights: ['Carbon plate', 'PEBA foam', 'Race-day weapon'],
+    lastVerified: '2026-05-04',
   },
   // === SAUCONY ===
   {
@@ -382,6 +393,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/saucony-ride-19/',
     imageURL: '/images/shoes/saucony-ride-19.jpg',
     highlights: ['PWRRUN+', 'Smooth ride', 'Versatile trainer'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'saucony-endorphin-azura',
@@ -403,6 +415,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/saucony-endorphin-azura/',
     imageURL: '/images/shoes/saucony-endorphin-azura.jpg',
     highlights: ['Carbon plate', 'PWRRUN HG', 'Elite racer'],
+    lastVerified: '2026-05-04',
   },
   // === ON ===
   {
@@ -425,6 +438,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/on-cloudsurfer-2/',
     imageURL: '/images/shoes/on-cloudsurfer-2.jpg',
     highlights: ['CloudTec Phase', 'Helion HF', 'Swiss engineering'],
+    lastVerified: '2026-05-04',
   },
   // === ADIDAS ===
   {
@@ -447,6 +461,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/adidas-adios-pro-4/',
     imageURL: '/images/shoes/adidas-adios-pro-4.jpg',
     highlights: ['ENERGYRODS 2.0', 'LIGHTSTRIKE PRO', 'Marathon weapon'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'adidas-adios-9',
@@ -468,6 +483,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/adidas-adios-9/',
     imageURL: '/images/shoes/adidas-adios-9.jpg',
     highlights: ['LIGHTSTRIKE PRO', 'Glass fiber rods', 'Tempo specialist'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'adidas-boston-13',
@@ -489,6 +505,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/adidas-adizero-boston-13/',
     imageURL: '/images/shoes/adidas-boston-13.jpg',
     highlights: ['LIGHTSTRIKE PRO', 'Energyrods', 'Fast daily trainer'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'adidas-evo-sl',
@@ -510,6 +527,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/adidas-evo-sl/',
     imageURL: '/images/shoes/adidas-evo-sl.jpg',
     highlights: ['DREAMSTRIKE+', 'Affordable', 'Great first shoe'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'adidas-evo-sl-atr',
@@ -531,6 +549,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/adidas-evo-sl-atr/',
     imageURL: '/images/shoes/adidas-evo-sl-atr.jpg',
     highlights: ['Continental rubber', 'Road-to-trail', 'Hybrid outsole'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'adidas-takumi-sen-11',
@@ -552,6 +571,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/adidas-takumi-sen-11/',
     imageURL: '/images/shoes/adidas-takumi-sen-11.jpg',
     highlights: ['Ultra lightweight', 'LIGHTSTRIKE PRO', 'Racing flat'],
+    lastVerified: '2026-05-04',
   },
   // === PUMA ===
   {
@@ -574,6 +594,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/puma-deviate-elite-4/',
     imageURL: '/images/shoes/puma-deviate-elite-4.jpg',
     highlights: ['NITRO ELITE foam', 'Carbon plate', 'Race day'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'puma-deviate-nitro-elite-2',
@@ -595,6 +616,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/puma-deviate-nitro-elite-2-review/',
     imageURL: '/images/shoes/puma-deviate-nitro-elite-2.jpg',
     highlights: ['NITRO ELITE', 'Carbon plate', 'Proven racer'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'puma-magmax-2',
@@ -616,6 +638,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/puma-magmax-2/',
     imageURL: '/images/shoes/puma-magmax-2.jpg',
     highlights: ['NITRO foam', 'Cushioned daily', 'Comfortable'],
+    lastVerified: '2026-05-04',
   },
   // === NEW BALANCE ===
   {
@@ -638,6 +661,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/new-balance-fresh-foam-x-more-v6/',
     imageURL: '/images/shoes/nb-more-v6.jpg',
     highlights: ['Fresh Foam X', 'Maximum stack', 'Recovery runs'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'nb-1080-v14',
@@ -659,6 +683,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/new-balance-1080-v14/',
     imageURL: '/images/shoes/nb-1080-v14.jpg',
     highlights: ['Fresh Foam X', 'Premium daily', 'Buttery smooth'],
+    lastVerified: '2026-05-04',
   },
   // === SALOMON (TRAIL) ===
   {
@@ -681,6 +706,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/salomon-speedcross-6.jpg',
     highlights: ['Contagrip MA', 'Aggressive lugs', 'Mud & soft terrain'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'salomon-ultra-glide-3',
@@ -702,6 +728,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/salomon-ultra-glide-3.jpg',
     highlights: ['Energy Foam', 'Contagrip', 'Ultra-distance trail'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'salomon-sense-ride-6',
@@ -723,6 +750,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/salomon-sense-ride-6.jpg',
     highlights: ['Road-to-trail', 'Optivibe', 'Versatile hybrid'],
+    lastVerified: '2026-05-04',
   },
   // === ALTRA (ZERO DROP) ===
   {
@@ -745,6 +773,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/altra-lone-peak-8.jpg',
     highlights: ['Zero drop', 'FootShape toe box', 'Trail icon'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'altra-torin-7',
@@ -766,6 +795,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/altra-torin-7.jpg',
     highlights: ['Zero drop', 'Wide toe box', 'Natural running'],
+    lastVerified: '2026-05-04',
   },
   // === MIZUNO ===
   {
@@ -788,6 +818,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/mizuno-wave-rider-28.jpg',
     highlights: ['Mizuno Enerzy', 'Wave plate', 'Smooth transition'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'mizuno-wave-inspire-21',
@@ -809,6 +840,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/mizuno-wave-inspire-21.jpg',
     highlights: ['Wave plate stability', 'Enerzy foam', 'Overpronation support'],
+    lastVerified: '2026-05-04',
   },
   // === BROOKS STABILITY ===
   {
@@ -831,6 +863,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/brooks-adrenaline-gts-25.jpg',
     highlights: ['GuideRails support', 'DNA LOFT v2', 'Gold standard stability'],
+    lastVerified: '2026-05-04',
   },
   // === HOKA TRAIL ===
   {
@@ -853,6 +886,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/hoka-speedgoat-6.jpg',
     highlights: ['Vibram Megagrip', 'Max cushion trail', 'Ultra-ready'],
+    lastVerified: '2026-05-04',
   },
   // === EXPANDED CATALOG: ELITE RACING ===
   {
@@ -875,6 +909,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['ZoomX + Air Zoom pods', 'World record marathon shoe', 'Elite carbon plate'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'nike-vaporfly-3',
@@ -896,6 +931,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['ZoomX foam', 'Carbon Flyplate', 'Lightning fast'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'nike-streakfly',
@@ -917,6 +953,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['Ultra-light', '5K/10K specialist', 'Pebax plate'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'adidas-adios-pro-3',
@@ -938,6 +975,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['Lightstrike Pro', 'EnergyRods 2.0', 'Elite marathon weapon'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'adidas-takumi-sen-10',
@@ -959,6 +997,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['Carbon EnergyRods', 'Short-distance racer', 'Aggressive geometry'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'adidas-boston-12',
@@ -980,6 +1019,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['Lightstrike Pro + EnergyRods', 'Daily trainer-racer', 'Workhorse for tempo days'],
+    lastVerified: '2026-05-04',
   },
   // === HOKA EXPANDED ===
   {
@@ -1002,6 +1042,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['Supercritical foam', 'Snappy & responsive', 'Best value tempo shoe'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'hoka-rocket-x-2',
@@ -1023,6 +1064,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['Carbon plate', 'PEBA midsole', 'Hoka\'s flagship racer'],
+    lastVerified: '2026-05-04',
   },
   // === SAUCONY EXPANDED ===
   {
@@ -1045,6 +1087,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['PWRRUN PB foam', 'Carbon plate', 'Smooth Speedroll geometry'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'saucony-triumph-22',
@@ -1066,6 +1109,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['PWRRUN+ foam', 'Plush daily max-cushion', 'Long-run comfort'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'saucony-kinvara-15',
@@ -1087,6 +1131,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['Lightweight uptempo', 'PWRRUN foam', 'Natural feel'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'saucony-peregrine-14',
@@ -1108,6 +1153,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['PWRTRAC outsole', 'Aggressive lugs', 'Trail all-rounder'],
+    lastVerified: '2026-05-04',
   },
   // === ON RUNNING ===
   {
@@ -1130,6 +1176,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['Helion HF supercritical', 'Speedboard plate', 'Swiss precision racer'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'on-cloudsurfer-next',
@@ -1151,6 +1198,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['CloudTec Phase', 'Smooth modern ride', 'Versatile daily'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'on-cloudmonster-2',
@@ -1172,6 +1220,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['Massive CloudTec', 'Plush long-run partner', 'Distinctive look'],
+    lastVerified: '2026-05-04',
   },
   // === ASICS EXPANDED ===
   {
@@ -1194,6 +1243,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['FF Turbo+ FF Blast Plus', 'Plateless supershoe feel', 'Cult favorite'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'asics-magic-speed-4',
@@ -1215,6 +1265,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['Carbon plate at value price', 'FF Blast Plus', 'Race-day backup'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'asics-metaspeed-sky-paris',
@@ -1236,6 +1287,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['FF Turbo+ midsole', 'Carbon plate', 'For striders'],
+    lastVerified: '2026-05-04',
   },
   // === NEW BALANCE EXPANDED ===
   {
@@ -1258,6 +1310,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['PEBA FuelCell foam', 'Energy Arc carbon plate', 'Stack monster racer'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'nb-fresh-foam-x-more-v5',
@@ -1279,6 +1332,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['Massive Fresh Foam X', 'Recovery champion', 'Pillowy ride'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'nb-fresh-foam-1080-v14',
@@ -1300,6 +1354,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['Premium Fresh Foam X', 'Wide-fit available', 'All-day comfort'],
+    lastVerified: '2026-05-04',
   },
   // === BROOKS EXPANDED ===
   {
@@ -1322,6 +1377,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['DNA Gold supercritical foam', 'Carbon SpeedVault plate', 'Brooks\' fastest shoe'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'brooks-hyperion-max-2',
@@ -1343,6 +1399,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['Plateless tempo trainer', 'DNA Flash v2', 'Smooth uptempo'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'brooks-cascadia-18',
@@ -1364,6 +1421,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['Trail Adapt System', 'Stable & protective', 'Beginner-friendly trail'],
+    lastVerified: '2026-05-04',
   },
   // === PUMA ===
   {
@@ -1386,6 +1444,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['NITRO Elite + A-PLATE', 'PWRPLATE carbon', 'Sub-200g speed'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'puma-velocity-nitro-3',
@@ -1407,6 +1466,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['NITRO foam', 'Best value daily trainer', 'PUMAGRIP outsole'],
+    lastVerified: '2026-05-04',
   },
   // === TRAIL SPECIALISTS ===
   {
@@ -1429,6 +1489,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['Graphene-grip outsole', 'Ultra-distance trail', 'Wide toe box'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'merrell-agility-peak-5',
@@ -1450,6 +1511,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['Vibram Megagrip', 'FloatPro Foam', 'Versatile trail'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'topo-mtn-racer-3',
@@ -1471,6 +1533,7 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['Vibram XS Trek EVO', 'Roomy toe box', 'Low drop natural feel'],
+    lastVerified: '2026-05-04',
   },
   {
     id: 'topo-cyclone-2',
@@ -1492,6 +1555,272 @@ export const shoeDatabase: Shoe[] = [
     reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
     imageURL: '/images/shoes/placeholder.jpg',
     highlights: ['ZipFoam supercritical', 'Roomy uptempo trainer', 'Low drop'],
+    lastVerified: '2026-05-04',
+  },
+  // === MAY 2026 ADDITIONS — backed by latest GearUpToFit reviews ===
+  {
+    id: 'nike-pegasus-42',
+    brand: 'Nike', model: 'Pegasus 42', year: 2026, category: 'daily',
+    cushioning: 7, dropMM: 10, weightGrams: 280,
+    pronation: ['neutral'], terrain: ['road'],
+    bestDistances: ['5k', '10k', 'half-marathon', 'marathon'],
+    bestFor: ['daily', 'beginner', 'long-run'], widthOptions: true, priceUSD: 140,
+    injuryFriendly: ['knee-pain', 'shin-splints'], amazonASIN: 'SEARCH',
+    reviewURL: 'https://gearuptofit.com/review/nike-pegasus-42/',
+    imageURL: '/images/shoes/placeholder.jpg',
+    highlights: ['Curved full-length Air Zoom', 'ReactX midsole', 'Roomier forefoot'],
+    sourceURL: 'https://www.nike.com/t/pegasus-42-mens-road-running-shoes',
+    lastVerified: '2026-05-04',
+  },
+  {
+    id: 'hoka-clifton-10',
+    brand: 'Hoka', model: 'Clifton 10', year: 2026, category: 'daily',
+    cushioning: 8, dropMM: 8, weightGrams: 272,
+    pronation: ['neutral'], terrain: ['road'],
+    bestDistances: ['5k', '10k', 'half-marathon', 'marathon'],
+    bestFor: ['daily', 'beginner', 'long-run', 'recovery'], widthOptions: true, priceUSD: 150,
+    injuryFriendly: ['plantar-fasciitis', 'knee-pain', 'shin-splints', 'achilles'],
+    amazonASIN: 'SEARCH',
+    reviewURL: 'https://gearuptofit.com/review/hoka-clifton-10/',
+    imageURL: '/images/shoes/placeholder.jpg',
+    highlights: ['Plush daily trainer', 'Smooth Meta-Rocker', 'Roomier everyday fit'],
+    sourceURL: 'https://www.hoka.com/en/us/mens-road/clifton-10/',
+    lastVerified: '2026-05-04',
+  },
+  {
+    id: 'hoka-skyward-x',
+    brand: 'Hoka', model: 'Skyward X', year: 2026, category: 'max-cushion',
+    cushioning: 10, dropMM: 5, weightGrams: 326,
+    pronation: ['neutral'], terrain: ['road'],
+    bestDistances: ['half-marathon', 'marathon', 'ultra'],
+    bestFor: ['long-run', 'recovery'], widthOptions: false, priceUSD: 225,
+    injuryFriendly: ['plantar-fasciitis', 'knee-pain', 'achilles'], amazonASIN: 'SEARCH',
+    reviewURL: 'https://gearuptofit.com/review/hoka-skyward-x/',
+    imageURL: '/images/shoes/placeholder.jpg',
+    highlights: ['Carbon-plated super trainer', 'Max-cushion stack', 'Easy-mile rocker'],
+    sourceURL: 'https://www.hoka.com/en/us/mens-road/skyward-x/',
+    lastVerified: '2026-05-04',
+  },
+  {
+    id: 'lining-feidian-6-elite',
+    brand: 'Li-Ning', model: 'Feidian 6 Elite', year: 2026, category: 'race',
+    cushioning: 8, dropMM: 6, weightGrams: 205,
+    pronation: ['neutral'], terrain: ['road'],
+    bestDistances: ['10k', 'half-marathon', 'marathon'],
+    bestFor: ['race-day', 'speed-work'], widthOptions: false, priceUSD: 230,
+    injuryFriendly: [], amazonASIN: 'SEARCH',
+    reviewURL: 'https://gearuptofit.com/review/li-ning-feidian-6-elite/',
+    imageURL: '/images/shoes/placeholder.jpg',
+    highlights: ['Full-length carbon plate', 'Super BOOM foam', 'Marathon racer'],
+    lastVerified: '2026-05-04',
+  },
+  {
+    id: 'asics-gel-nimbus-29',
+    brand: 'ASICS', model: 'Gel-Nimbus 29', year: 2026, category: 'max-cushion',
+    cushioning: 10, dropMM: 8, weightGrams: 295,
+    pronation: ['neutral'], terrain: ['road'],
+    bestDistances: ['10k', 'half-marathon', 'marathon'],
+    bestFor: ['daily', 'long-run', 'recovery'], widthOptions: true, priceUSD: 165,
+    injuryFriendly: ['plantar-fasciitis', 'knee-pain', 'shin-splints'], amazonASIN: 'SEARCH',
+    reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
+    imageURL: '/images/shoes/placeholder.jpg',
+    highlights: ['FF Blast Max foam', 'Plush max-cushion', 'Daily long-run'],
+    lastVerified: '2026-05-04',
+  },
+  {
+    id: 'asics-novablast-6',
+    brand: 'ASICS', model: 'Novablast 6', year: 2026, category: 'daily',
+    cushioning: 8, dropMM: 8, weightGrams: 255,
+    pronation: ['neutral'], terrain: ['road'],
+    bestDistances: ['5k', '10k', 'half-marathon', 'marathon'],
+    bestFor: ['daily', 'tempo', 'long-run'], widthOptions: false, priceUSD: 145,
+    injuryFriendly: ['knee-pain'], amazonASIN: 'SEARCH',
+    reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
+    imageURL: '/images/shoes/placeholder.jpg',
+    highlights: ['Bouncy FF Blast Max', 'Versatile do-it-all', 'Trampoline ride'],
+    lastVerified: '2026-05-04',
+  },
+  {
+    id: 'asics-metaspeed-edge-tokyo',
+    brand: 'ASICS', model: 'Metaspeed Edge Tokyo', year: 2026, category: 'race',
+    cushioning: 8, dropMM: 5, weightGrams: 190,
+    pronation: ['neutral'], terrain: ['road', 'track'],
+    bestDistances: ['5k', '10k', 'half-marathon', 'marathon'],
+    bestFor: ['race-day', 'speed-work'], widthOptions: false, priceUSD: 250,
+    injuryFriendly: [], amazonASIN: 'SEARCH',
+    reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
+    imageURL: '/images/shoes/placeholder.jpg',
+    highlights: ['Carbon plate', 'FF Turbo Plus foam', 'Cadence-style racer'],
+    lastVerified: '2026-05-04',
+  },
+  {
+    id: 'brooks-glycerin-22',
+    brand: 'Brooks', model: 'Glycerin 22', year: 2026, category: 'max-cushion',
+    cushioning: 9, dropMM: 10, weightGrams: 295,
+    pronation: ['neutral'], terrain: ['road'],
+    bestDistances: ['10k', 'half-marathon', 'marathon'],
+    bestFor: ['daily', 'long-run', 'recovery'], widthOptions: true, priceUSD: 165,
+    injuryFriendly: ['plantar-fasciitis', 'knee-pain', 'shin-splints'], amazonASIN: 'SEARCH',
+    reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
+    imageURL: '/images/shoes/placeholder.jpg',
+    highlights: ['DNA Tuned nitrogen foam', 'Plush long-run feel', 'Wide sizes'],
+    lastVerified: '2026-05-04',
+  },
+  {
+    id: 'brooks-hyperion-max-3',
+    brand: 'Brooks', model: 'Hyperion Max 3', year: 2026, category: 'speed',
+    cushioning: 7, dropMM: 8, weightGrams: 230,
+    pronation: ['neutral'], terrain: ['road'],
+    bestDistances: ['5k', '10k', 'half-marathon', 'marathon'],
+    bestFor: ['tempo', 'speed-work', 'race-day'], widthOptions: false, priceUSD: 175,
+    injuryFriendly: [], amazonASIN: 'SEARCH',
+    reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
+    imageURL: '/images/shoes/placeholder.jpg',
+    highlights: ['DNA Flash v2', 'Plate-free uptempo', 'Lightweight'],
+    lastVerified: '2026-05-04',
+  },
+  {
+    id: 'saucony-endorphin-speed-5',
+    brand: 'Saucony', model: 'Endorphin Speed 5', year: 2026, category: 'speed',
+    cushioning: 7, dropMM: 8, weightGrams: 232,
+    pronation: ['neutral'], terrain: ['road'],
+    bestDistances: ['5k', '10k', 'half-marathon', 'marathon'],
+    bestFor: ['tempo', 'speed-work', 'race-day'], widthOptions: false, priceUSD: 180,
+    injuryFriendly: [], amazonASIN: 'SEARCH',
+    reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
+    imageURL: '/images/shoes/placeholder.jpg',
+    highlights: ['PWRRUN PB foam', 'Nylon plate', 'Daily-to-race versatility'],
+    lastVerified: '2026-05-04',
+  },
+  {
+    id: 'saucony-endorphin-pro-5',
+    brand: 'Saucony', model: 'Endorphin Pro 5', year: 2026, category: 'race',
+    cushioning: 8, dropMM: 8, weightGrams: 218,
+    pronation: ['neutral'], terrain: ['road'],
+    bestDistances: ['10k', 'half-marathon', 'marathon'],
+    bestFor: ['race-day', 'speed-work'], widthOptions: false, priceUSD: 230,
+    injuryFriendly: [], amazonASIN: 'SEARCH',
+    reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
+    imageURL: '/images/shoes/placeholder.jpg',
+    highlights: ['Carbon plate', 'PWRRUN HG supercritical', 'Marathon racer'],
+    lastVerified: '2026-05-04',
+  },
+  {
+    id: 'on-cloudboom-strike-ls',
+    brand: 'On', model: 'Cloudboom Strike LS', year: 2026, category: 'race',
+    cushioning: 8, dropMM: 4, weightGrams: 170,
+    pronation: ['neutral'], terrain: ['road'],
+    bestDistances: ['10k', 'half-marathon', 'marathon'],
+    bestFor: ['race-day', 'speed-work'], widthOptions: false, priceUSD: 330,
+    injuryFriendly: [], amazonASIN: 'SEARCH',
+    reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
+    imageURL: '/images/shoes/placeholder.jpg',
+    highlights: ['LightSpray seamless upper', 'Speedboard plate', 'Ultralight racer'],
+    lastVerified: '2026-05-04',
+  },
+  {
+    id: 'on-cloudeclipse-2',
+    brand: 'On', model: 'Cloudeclipse 2', year: 2026, category: 'max-cushion',
+    cushioning: 9, dropMM: 6, weightGrams: 295,
+    pronation: ['neutral'], terrain: ['road'],
+    bestDistances: ['10k', 'half-marathon', 'marathon'],
+    bestFor: ['daily', 'long-run', 'recovery'], widthOptions: false, priceUSD: 180,
+    injuryFriendly: ['plantar-fasciitis', 'knee-pain'], amazonASIN: 'SEARCH',
+    reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
+    imageURL: '/images/shoes/placeholder.jpg',
+    highlights: ['Double Helion foam', 'Cushioned daily', 'Smooth rocker'],
+    lastVerified: '2026-05-04',
+  },
+  {
+    id: 'nb-supercomp-trainer-v3',
+    brand: 'New Balance', model: 'FuelCell SuperComp Trainer v3', year: 2026, category: 'max-cushion',
+    cushioning: 10, dropMM: 6, weightGrams: 310,
+    pronation: ['neutral'], terrain: ['road'],
+    bestDistances: ['half-marathon', 'marathon', 'ultra'],
+    bestFor: ['long-run'], widthOptions: true, priceUSD: 200,
+    injuryFriendly: ['knee-pain', 'achilles'], amazonASIN: 'SEARCH',
+    reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
+    imageURL: '/images/shoes/placeholder.jpg',
+    highlights: ['Energy Arc carbon plate', 'PEBA midsole', 'Stacked super trainer'],
+    lastVerified: '2026-05-04',
+  },
+  {
+    id: 'adidas-evo-sl-2',
+    brand: 'Adidas', model: 'Adizero Evo SL 2', year: 2026, category: 'speed',
+    cushioning: 7, dropMM: 6, weightGrams: 215,
+    pronation: ['neutral'], terrain: ['road'],
+    bestDistances: ['5k', '10k', 'half-marathon', 'marathon'],
+    bestFor: ['daily', 'tempo', 'speed-work'], widthOptions: false, priceUSD: 160,
+    injuryFriendly: [], amazonASIN: 'SEARCH',
+    reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
+    imageURL: '/images/shoes/placeholder.jpg',
+    highlights: ['Lightstrike Pro foam', 'Plate-free uptempo', 'Daily-to-race versatility'],
+    lastVerified: '2026-05-04',
+  },
+  {
+    id: 'hoka-mach-x-2',
+    brand: 'Hoka', model: 'Mach X 2', year: 2026, category: 'speed',
+    cushioning: 8, dropMM: 5, weightGrams: 260,
+    pronation: ['neutral'], terrain: ['road'],
+    bestDistances: ['10k', 'half-marathon', 'marathon'],
+    bestFor: ['tempo', 'speed-work', 'long-run'], widthOptions: false, priceUSD: 190,
+    injuryFriendly: [], amazonASIN: 'SEARCH',
+    reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
+    imageURL: '/images/shoes/placeholder.jpg',
+    highlights: ['Pebax plate', 'PEBA-blend foam', 'Versatile super trainer'],
+    lastVerified: '2026-05-04',
+  },
+  {
+    id: 'nnormal-kjerag-2',
+    brand: 'NNormal', model: 'Kjerag 2', year: 2026, category: 'trail',
+    cushioning: 7, dropMM: 6, weightGrams: 220,
+    pronation: ['neutral'], terrain: ['trail'],
+    bestDistances: ['half-marathon', 'marathon', 'ultra'],
+    bestFor: ['trail', 'ultra', 'race-day'], widthOptions: false, priceUSD: 195,
+    injuryFriendly: [], amazonASIN: 'SEARCH',
+    reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
+    imageURL: '/images/shoes/placeholder.jpg',
+    highlights: ['Vibram Litebase Megagrip', 'EExpure midsole', 'Kilian-tested ultra racer'],
+    lastVerified: '2026-05-04',
+  },
+  {
+    id: 'salomon-s-lab-genesis',
+    brand: 'Salomon', model: 'S/Lab Genesis', year: 2026, category: 'trail',
+    cushioning: 7, dropMM: 8, weightGrams: 245,
+    pronation: ['neutral'], terrain: ['trail'],
+    bestDistances: ['half-marathon', 'marathon', 'ultra'],
+    bestFor: ['trail', 'ultra'], widthOptions: false, priceUSD: 200,
+    injuryFriendly: [], amazonASIN: 'SEARCH',
+    reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
+    imageURL: '/images/shoes/placeholder.jpg',
+    highlights: ['Energy Foam', 'Contagrip MA', 'Long-distance trail racer'],
+    lastVerified: '2026-05-04',
+  },
+  {
+    id: 'puma-fast-r-nitro-elite-3',
+    brand: 'Puma', model: 'Fast-R Nitro Elite 3', year: 2026, category: 'race',
+    cushioning: 8, dropMM: 8, weightGrams: 195,
+    pronation: ['neutral'], terrain: ['road'],
+    bestDistances: ['10k', 'half-marathon', 'marathon'],
+    bestFor: ['race-day', 'speed-work'], widthOptions: false, priceUSD: 275,
+    injuryFriendly: [], amazonASIN: 'SEARCH',
+    reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
+    imageURL: '/images/shoes/placeholder.jpg',
+    highlights: ['Decoupled carbon plate', 'Nitro Elite + A-Foam', 'Marathon super shoe'],
+    lastVerified: '2026-05-04',
+  },
+  {
+    id: 'mizuno-neo-vista-2',
+    brand: 'Mizuno', model: 'Neo Vista 2', year: 2026, category: 'max-cushion',
+    cushioning: 9, dropMM: 8, weightGrams: 265,
+    pronation: ['neutral'], terrain: ['road'],
+    bestDistances: ['10k', 'half-marathon', 'marathon'],
+    bestFor: ['daily', 'long-run', 'tempo'], widthOptions: false, priceUSD: 185,
+    injuryFriendly: ['knee-pain'], amazonASIN: 'SEARCH',
+    reviewURL: 'https://gearuptofit.com/review/best-running-shoes/',
+    imageURL: '/images/shoes/placeholder.jpg',
+    highlights: ['Enerzy NXT foam', 'Plate-free super trainer', 'Bouncy long-run'],
+    lastVerified: '2026-05-04',
   },
 ];
 
