@@ -56,7 +56,7 @@ export const shoeDatabase: Shoe[] = [
     imageURL: '/images/shoes/nike-pegasus-41.jpg',
     highlights: ['ReactX foam', 'Versatile all-rounder', 'Great for beginners'],
     sourceURL: 'https://www.nike.com/t/pegasus-41-mens-road-running-shoes-MdxBSc',
-    lastVerified: '2026-04-20',
+    lastVerified: '2026-05-04',
   },
   {
     id: 'nike-pegasus-premium',
@@ -143,7 +143,7 @@ export const shoeDatabase: Shoe[] = [
     imageURL: '/images/shoes/brooks-ghost-17.jpg',
     highlights: ['DNA LOFT v2', 'Smooth transitions', 'Classic neutral'],
     sourceURL: 'https://www.brooksrunning.com/en_us/ghost-17-mens-road-running-shoes/110441.html',
-    lastVerified: '2026-04-20',
+    lastVerified: '2026-05-04',
   },
   {
     id: 'brooks-glycerin-max-2',
@@ -230,7 +230,7 @@ export const shoeDatabase: Shoe[] = [
     imageURL: '/images/shoes/asics-novablast-5.jpg',
     highlights: ['FF BLAST PLUS', 'Bouncy ride', 'Tempo sessions'],
     sourceURL: 'https://www.asics.com/us/en-us/novablast-5/p/1011B868.html',
-    lastVerified: '2026-04-20',
+    lastVerified: '2026-05-04',
   },
   {
     id: 'asics-novablast-4',
@@ -338,7 +338,7 @@ export const shoeDatabase: Shoe[] = [
     imageURL: '/images/shoes/hoka-bondi-9.jpg',
     highlights: ['Ultra-cushioned', 'Meta-Rocker', 'Recovery-friendly'],
     sourceURL: 'https://www.hoka.com/en/us/mens-road/bondi-9/1147010.html',
-    lastVerified: '2026-04-20',
+    lastVerified: '2026-05-04',
   },
   {
     id: 'hoka-cielo-x1-3',
