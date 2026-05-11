@@ -4,6 +4,7 @@ import { QuizStep, QuizAnswers, popularBrands } from '@/lib/quiz-data';
 import { Slider } from '@/components/ui/slider';
 import { Input } from '@/components/ui/input';
 import { Check, Search, X, icons as LucideIcons, type LucideIcon } from 'lucide-react';
+import { assetPath } from '@/lib/asset-path';
 
 const renderIcon = (name: string | undefined, isSelected: boolean) => {
   if (!name) return null;
@@ -94,7 +95,7 @@ const QuizStepContent = ({ step, answers, setAnswer, handleMultiSelect, onAutoAd
 
             {/* Image — object-contain preserves built-in labels & triptych composition */}
             <motion.img
-              src={step.image}
+              src={assetPath(step.image)}
               alt={step.title}
               initial={{ scale: 1.02 }}
               animate={{ scale: 1 }}
@@ -102,7 +103,6 @@ const QuizStepContent = ({ step, answers, setAnswer, handleMultiSelect, onAutoAd
               className="relative w-full h-full object-cover object-center will-change-transform"
               loading="eager"
               decoding="async"
-              fetchPriority="high"
             />
 
             {/* Step badge — floats top-right, no gradient overlay so image labels stay legible */}
