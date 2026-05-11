@@ -103,7 +103,6 @@ const QuizStepContent = ({ step, answers, setAnswer, handleMultiSelect, onAutoAd
               className="relative w-full h-full object-cover object-center will-change-transform"
               loading="eager"
               decoding="async"
-              fetchpriority="high"
             />
 
             {/* Step badge — floats top-right, no gradient overlay so image labels stay legible */}
