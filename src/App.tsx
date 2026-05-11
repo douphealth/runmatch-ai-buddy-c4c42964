@@ -16,7 +16,17 @@ const App = () => (
       <TooltipProvider>
         <Toaster />
         <Sonner />
-        <BrowserRouter>
+        <BrowserRouter basename={(() => {
+          if (typeof document === "undefined") return "/";
+          const href = document.querySelector("base")?.getAttribute("href") || "/";
+          // Strip protocol/host if present, drop trailing slash (except root)
+          try {
+            const path = new URL(href, window.location.origin).pathname;
+            return path !== "/" && path.endsWith("/") ? path.slice(0, -1) : path;
+          } catch {
+            return "/";
+          }
+        })()}>
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/app/runmatch/:slug" element={<RunMatchResult />} />
