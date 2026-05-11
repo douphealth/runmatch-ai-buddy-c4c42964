@@ -29,7 +29,11 @@ export function generateProductSchema(rec: ShoeRecommendation, answers: QuizAnsw
 
   if (recommendedShoe) {
     const img = resolveShoeImage(recommendedShoe);
-    if (img.url) base.image = img.url;
+    if (img.url) {
+      // Absolute URL for JSON-LD (crawlers won't resolve relative paths reliably).
+      const path = img.url.startsWith('/shoe-match') ? img.url : `/shoe-match${img.url.startsWith('/') ? '' : '/'}${img.url}`;
+      base.image = `https://gearuptofit.com${path}`;
+    }
     base.offers = {
       '@type': 'Offer',
       price: String(recommendedShoe.priceUSD),
