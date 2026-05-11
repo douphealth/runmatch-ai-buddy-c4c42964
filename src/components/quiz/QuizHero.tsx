@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Shield, RotateCcw, Target, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SEOContent from '@/components/SEOContent';
+import { assetPath } from '@/lib/asset-path';
 
 interface QuizHeroProps {
   onStart: () => void;
