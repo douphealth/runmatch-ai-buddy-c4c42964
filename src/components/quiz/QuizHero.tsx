@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Shield, RotateCcw, Target, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import SEOContent from '@/components/SEOContent';
 
 interface QuizHeroProps {
   onStart: () => void;
@@ -14,6 +15,7 @@ const features = [
 
 const QuizHero = ({ onStart }: QuizHeroProps) => {
   return (
+    <>
     <div className="min-h-screen flex flex-col relative overflow-hidden">
       {/* Hero background */}
       <div className="absolute inset-0">
@@ -91,7 +93,7 @@ const QuizHero = ({ onStart }: QuizHeroProps) => {
           </motion.div>
 
           {/* Heading */}
-          <h1 className="text-[2.5rem] sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-4 md:mb-6 uppercase leading-[0.9] sm:leading-[0.85] break-words">
+          <h2 className="text-[2.5rem] sm:text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight mb-4 md:mb-6 uppercase leading-[0.9] sm:leading-[0.85] break-words" aria-label="RunMatch AI Running Shoe Finder">
             Find Your
             <motion.span
               className="block text-gradient mt-1"
@@ -101,7 +103,7 @@ const QuizHero = ({ onStart }: QuizHeroProps) => {
             >
               Perfect Shoe
             </motion.span>
-          </h1>
+          </h2>
 
           <motion.p
             initial={{ opacity: 0 }}
@@ -183,6 +185,8 @@ const QuizHero = ({ onStart }: QuizHeroProps) => {
         </motion.div>
       </div>
     </div>
+    <SEOContent />
+    </>
   );
 };
 
