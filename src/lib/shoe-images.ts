@@ -1,4 +1,5 @@
 import { Shoe } from './shoe-database';
+import { assetPath } from './asset-path';
 
 /**
  * Compute a deterministic, filesystem-safe slug from brand + model.
@@ -37,7 +38,7 @@ export function resolveShoeImage(
 ): ResolvedShoeImage {
   const slug = shoeImageSlug(shoe.brand, shoe.model);
   return {
-    url: `/images/shoes/${slug}.jpg`,
+    url: assetPath(`/images/shoes/${slug}.jpg`),
     source: 'real-scraped',
     label: 'Real Photo',
   };

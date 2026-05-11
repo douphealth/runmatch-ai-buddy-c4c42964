@@ -2,6 +2,7 @@ import { motion } from "framer-motion";
 import { ArrowRight, Shield, RotateCcw, Target, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SEOContent from '@/components/SEOContent';
+import { assetPath } from '@/lib/asset-path';
 
 interface QuizHeroProps {
   onStart: () => void;
@@ -20,7 +21,7 @@ const QuizHero = ({ onStart }: QuizHeroProps) => {
       {/* Hero background */}
       <div className="absolute inset-0">
         <img
-          src="/images/hero-shoes.jpg"
+          src={assetPath('/images/hero-shoes.jpg')}
           alt="Premium running shoes with dramatic red lighting"
           className="w-full h-full object-cover"
           width={1920}
