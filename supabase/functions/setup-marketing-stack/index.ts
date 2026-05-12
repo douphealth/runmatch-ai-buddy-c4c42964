@@ -318,7 +318,8 @@ Deno.serve(async (req) => {
           report.wp_brevo_activate = { already_active: true, plugin: brevoPlugin.plugin };
         }
       } else {
-        report.wp_brevo_activate = { not_installed: true };
+        // Install official Brevo plugin from WordPress.org (slug: 'mailin')
+        report.wp_brevo_install = await wpInstallPlugin('mailin');
       }
 
       // Deactivate MailPoet to avoid conflict
