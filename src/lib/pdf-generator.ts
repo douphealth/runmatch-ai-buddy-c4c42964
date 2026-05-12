@@ -1253,7 +1253,7 @@ export async function generateResultsPDF(data: PDFData) {
   doc.text('2026', PW - M - 12.5, y + 14.7, { align: 'center', charSpace: 0.4 } as any);
 
 
-  addFooter(doc, 4, totalPages);
+  addFooter(doc, 5, totalPages);
 
   // Save
   const slug = `runmatch-${answers.terrain}-${answers.distance}-${answers.pronation}`;
