@@ -269,7 +269,7 @@ Deno.serve(async (req) => {
       method: 'POST',
       body: JSON.stringify({
         type: 'TXT', name: `_dmarc.${DOMAIN}`,
-        content: 'v=DMARC1; p=none; rua=mailto:rua@dmarc.brevo.com,mailto:dmarc@gearuptofit.com; ruf=mailto:dmarc@gearuptofit.com; fo=1; aspf=r; adkim=r',
+        content: 'v=DMARC1; p=none; rua=mailto:rua@dmarc.brevo.com',
         ttl: 1,
       }),
     });
