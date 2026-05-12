@@ -835,6 +835,16 @@ const RunMatchResult = () => {
           </p>
         </div>
       </main>
+      <EmailGate
+        open={gateOpen}
+        onClose={handleGateClose}
+        onUnlock={handleGateUnlock}
+        primaryShoe={primary?.shoe ? `${primary.shoe.brand} ${primary.shoe.model}` : undefined}
+        shoeCategory={primary?.shoe?.category as any}
+        weeklyMileage={answers?.weeklyMileage}
+        injuries={answers?.injuries}
+        source="quiz_gate"
+      />
     </div>
   );
 };
