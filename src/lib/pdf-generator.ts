@@ -754,6 +754,138 @@ export async function generateResultsPDF(data: PDFData) {
   addFooter(doc, 2, totalPages);
 
   // ═══════════════════════════════════════
+  // PAGE 3: Personalized Running Playbook
+  // ═══════════════════════════════════════
+  doc.addPage();
+  addHeader(doc);
+  y = 24;
+
+  doc.setFontSize(18);
+  doc.setTextColor(C.dark[0], C.dark[1], C.dark[2]);
+  doc.setFont('helvetica', 'bold');
+  doc.text('YOUR RUNNING PLAYBOOK', M, y);
+  doc.setFillColor(C.red[0], C.red[1], C.red[2]);
+  doc.rect(M, y + 2, 28, 0.7, 'F');
+  y += 7;
+
+  doc.setFontSize(7);
+  doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
+  doc.setFont('helvetica', 'italic');
+  doc.text(`A 4-block playbook tailored to ${answers.distance.replace(/-/g, ' ').toUpperCase()} on ${answers.terrain} at ${answers.weeklyMileage} km/week.`, M, y);
+  y += 7;
+
+  // ── Block 1: 14-Day Shoe Break-In Protocol ──
+  const breakIn = [
+    { d: 'Days 1–3', t: 'Walk 15 minutes indoors. Check for hot spots and lacing pressure.' },
+    { d: 'Days 4–7', t: 'Easy run 3–5 km at conversational pace. No speed work yet.' },
+    { d: 'Days 8–11', t: 'Two easy runs of 5–8 km. Add 4×20s strides on the second run.' },
+    { d: 'Days 12–14', t: 'Long run up to 60% of weekly peak. Shoes are now race-ready.' },
+  ];
+  const biH = 12 + breakIn.length * 8 + 4;
+  rr(doc, M, y, CW, biH, 3, C.cardBg, C.border);
+  y = sectionTitle(doc, y + 3, '14-DAY SHOE BREAK-IN PROTOCOL', C.red);
+  breakIn.forEach((step, i) => {
+    const ry = y + i * 8;
+    pill(doc, M + 7, ry, step.d.toUpperCase(), C.redBg, C.red);
+    doc.setFontSize(6.8);
+    doc.setTextColor(C.text[0], C.text[1], C.text[2]);
+    doc.setFont('helvetica', 'normal');
+    const lines = doc.splitTextToSize(step.t, CW - 42);
+    doc.text(lines[0], M + 38, ry + 3);
+  });
+  y += breakIn.length * 8 + 5;
+
+  // ── Block 2: Form & Cadence Cues ──
+  const cueH = 32;
+  rr(doc, M, y, CW, cueH, 3, C.blueBg, C.border);
+  y = sectionTitle(doc, y + 3, 'FORM & CADENCE CUES', C.blue);
+  const cues = [
+    'Target 170–180 steps/min — short, light, quiet.',
+    'Land under your hips, not out in front. Imagine pulling the ground back.',
+    'Relax shoulders. Hands soft, elbows at ~90°.',
+    'Exhale on the foot strike of your weaker side to balance breathing.',
+  ];
+  cues.forEach((c, i) => {
+    const col = i % 2;
+    const row = Math.floor(i / 2);
+    const cx = M + 7 + col * (CW / 2);
+    const cy = y + row * 7;
+    doc.setFillColor(C.blue[0], C.blue[1], C.blue[2]);
+    doc.circle(cx, cy + 1, 0.9, 'F');
+    doc.setFontSize(6.5);
+    doc.setTextColor(C.text[0], C.text[1], C.text[2]);
+    doc.setFont('helvetica', 'normal');
+    const lines = doc.splitTextToSize(c, CW / 2 - 12);
+    doc.text(lines[0], cx + 3, cy + 2);
+  });
+  y += 18;
+
+  // ── Block 3: Personalized 4-Week Plan ──
+  const dist = answers.distance;
+  const longTarget = dist === '5k' ? 8 : dist === '10k' ? 14 : dist === 'half-marathon' ? 22 : dist === 'marathon' ? 32 : dist === 'ultra' ? 38 : 12;
+  const peakKm = Math.round(answers.weeklyMileage * 1.1);
+  const planRows = [
+    { w: 'WK 1', easy: `3 × ${Math.max(5, Math.round(answers.weeklyMileage * 0.18))} km easy`, quality: '4 × 400m strides', long: `${Math.round(longTarget * 0.55)} km easy` },
+    { w: 'WK 2', easy: `3 × ${Math.max(5, Math.round(answers.weeklyMileage * 0.20))} km easy`, quality: '6 × 400m @ 5K pace', long: `${Math.round(longTarget * 0.70)} km steady` },
+    { w: 'WK 3 (peak)', easy: `3 × ${Math.max(6, Math.round(peakKm * 0.20))} km easy`, quality: '20 min tempo @ threshold', long: `${longTarget} km long run` },
+    { w: 'WK 4 (taper)', easy: `2 × ${Math.max(5, Math.round(answers.weeklyMileage * 0.15))} km easy`, quality: '3 × 1km @ goal pace', long: `${Math.round(longTarget * 0.55)} km easy` },
+  ];
+  const planH = 12 + planRows.length * 9 + 6;
+  rr(doc, M, y, CW, planH, 3, C.cardBg, C.border);
+  y = sectionTitle(doc, y + 3, 'YOUR 4-WEEK PROGRESSION', C.green);
+
+  // Header row
+  const colXs = [M + 8, M + 35, M + 90, M + 145];
+  const headers = ['WEEK', 'EASY DAYS', 'QUALITY SESSION', 'LONG RUN'];
+  doc.setFontSize(5.5);
+  doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
+  doc.setFont('helvetica', 'bold');
+  headers.forEach((h, i) => doc.text(h, colXs[i], y, { charSpace: 0.4 } as any));
+  doc.setDrawColor(C.border[0], C.border[1], C.border[2]);
+  doc.setLineWidth(0.2);
+  doc.line(M + 4, y + 2, PW - M - 4, y + 2);
+  y += 5;
+
+  planRows.forEach((r, i) => {
+    if (i % 2 === 0) {
+      rr(doc, M + 4, y - 3, CW - 8, 8.5, 1.5, C.bg);
+    }
+    doc.setFontSize(7);
+    doc.setTextColor(C.red[0], C.red[1], C.red[2]);
+    doc.setFont('helvetica', 'bold');
+    doc.text(r.w, colXs[0], y + 2);
+    doc.setTextColor(C.text[0], C.text[1], C.text[2]);
+    doc.setFont('helvetica', 'normal');
+    doc.setFontSize(6.5);
+    doc.text(r.easy, colXs[1], y + 2);
+    doc.text(r.quality, colXs[2], y + 2);
+    doc.text(r.long, colXs[3], y + 2);
+    y += 9;
+  });
+  y += 2;
+
+  // ── Block 4: Injury-Specific Watch-outs ──
+  if (y + 28 < PH - 22) {
+    const inj = answers.injuries.filter(i => i !== 'none');
+    const watchH = 26;
+    rr(doc, M, y, CW, watchH, 3, C.redBg, C.border);
+    y = sectionTitle(doc, y + 3, inj.length > 0 ? 'INJURY-AWARE COACHING NOTES' : 'STAY-HEALTHY ESSENTIALS', C.redLight);
+    doc.setFontSize(6.5);
+    doc.setTextColor(C.text[0], C.text[1], C.text[2]);
+    doc.setFont('helvetica', 'normal');
+    let note = 'Two strength sessions per week (single-leg work + core). Foam roll 5 min after every run. Sleep 8h on quality-day eves.';
+    if (inj.includes('plantar-fasciitis')) note = 'Calf raises 3×15 daily. Roll arch on a frozen bottle. Avoid barefoot on hard floors first thing AM.';
+    else if (inj.includes('it-band') || inj.includes('knee-pain')) note = 'Glute medius work (clamshells, side planks) 3×/week. Avoid sudden mileage jumps >10%/week. Run on level surfaces.';
+    else if (inj.includes('achilles')) note = 'Eccentric heel drops 3×15 daily. Warm up calves 5 min before quality work. Prefer 10–12mm drop until pain-free.';
+    else if (inj.includes('shin-splints')) note = 'Tibialis raises 3×20 pre-run. Rotate two pairs to vary load. Add cushion on back-to-back run days.';
+    const noteLines = doc.splitTextToSize(note, CW - 14);
+    doc.text(noteLines.slice(0, 3), M + 7, y);
+    y += watchH - 8;
+  }
+
+  addFooter(doc, 3, totalPages);
+
+  // ═══════════════════════════════════════
   // PAGE 3: Resources + Articles
   // ═══════════════════════════════════════
   doc.addPage();
