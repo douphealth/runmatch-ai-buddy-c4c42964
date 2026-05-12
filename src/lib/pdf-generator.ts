@@ -310,9 +310,20 @@ function drawShoeFrame(
   (doc as any).setGState && (doc as any).setGState(new (doc as any).GState({ opacity: 1 }));
 
   if (img) {
-    const pad = 1.5;
+    const pad = 2.2;
+    const boxW = w - pad * 2;
+    const boxH = h - pad * 2 - 1.8; // leave room for floor shadow
     try {
-      doc.addImage(img.data, img.format, x + pad, y + pad, w - pad * 2, h - pad * 2 - 1.5, undefined, 'FAST');
+      // Preserve aspect ratio: contain-fit the image within the inner box and center it.
+      const props: any = (doc as any).getImageProperties ? (doc as any).getImageProperties(img.data) : null;
+      const iw = props?.width ?? boxW;
+      const ih = props?.height ?? boxH;
+      const scale = Math.min(boxW / iw, boxH / ih);
+      const drawW = iw * scale;
+      const drawH = ih * scale;
+      const drawX = x + pad + (boxW - drawW) / 2;
+      const drawY = y + pad + (boxH - drawH) / 2;
+      doc.addImage(img.data, img.format, drawX, drawY, drawW, drawH, undefined, 'FAST');
     } catch {
       // ignore — placeholder text will be drawn below
     }
