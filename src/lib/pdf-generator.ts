@@ -1022,7 +1022,7 @@ export async function generateResultsPDF(data: PDFData) {
     y += Math.ceil(Math.min(tools.length, 4) / 2) * (toolH + 3) + 4;
   }
 
-  addFooter(doc, 3, totalPages);
+  addFooter(doc, 4, totalPages);
 
   // ═══════════════════════════════════════
   // PAGE 4: Complete Kit + CTA
