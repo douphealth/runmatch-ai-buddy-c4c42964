@@ -323,9 +323,12 @@ Deno.serve(async (req) => {
     const lists = await ensureBrevoLists();
     report.brevo_lists = lists;
 
-    // 4. Brevo: sender
+    // 4. Brevo: sender (info@gearuptofit.com) + trigger validation email
     const sender = await ensureBrevoSender();
     report.brevo_sender = sender;
+
+    // 4b. Brevo: domain authentication (DKIM/SPF/DMARC for gearuptofit.com)
+    report.brevo_domain_auth = await ensureBrevoDomainAuth();
 
     // 5. Brevo: DOI template (only if sender id exists)
     if (sender.id) {
