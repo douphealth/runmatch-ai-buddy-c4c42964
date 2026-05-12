@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.marketing-finalize]
 verify_jwt = false
+
+[functions.upgrade-brevo-templates]
+verify_jwt = false
