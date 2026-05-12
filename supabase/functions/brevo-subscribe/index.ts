@@ -105,7 +105,62 @@ Deno.serve(async (req) => {
     try { parsed = text ? JSON.parse(text) : null; } catch { /* ignore */ }
 
     if (res.ok || parsed?.code === 'duplicate_parameter') {
-      return new Response(JSON.stringify({ success: true, doubleOptIn: useDoi }),
+      // Fire the Day-0 Welcome email IMMEDIATELY (template 2) so the runner
+      // gets their report straight away. The hourly drip dispatcher continues
+      // with Day 2-21 and is idempotent via email_drip_log.
+      let welcomeSent = false;
+      if (!useDoi) {
+        try {
+          const sendRes = await fetch('https://api.brevo.com/v3/smtp/email', {
+            method: 'POST',
+            headers: { 'api-key': apiKey, 'content-type': 'application/json', 'accept': 'application/json' },
+            body: JSON.stringify({
+              sender: { name: 'GearUpToFit · RunMatch AI', email: 'info@gearuptofit.com' },
+              to: [{ email: body.email.toLowerCase().trim(), name: body.firstName || undefined }],
+              templateId: 2,
+              params: {
+                FIRSTNAME: body.firstName || 'runner',
+                PRIMARY_SHOE: body.primaryShoe || '',
+                SHOE_CATEGORY: body.shoeCategory || '',
+              },
+              tags: ['drip-day-0', 'runmatch-welcome', `source-${body.source}`],
+              headers: { 'X-Mailin-Custom': 'drip:0:2' },
+            }),
+          });
+          welcomeSent = sendRes.ok;
+          if (sendRes.ok) {
+            const sendJson: any = await sendRes.json().catch(() => ({}));
+            // Log to email_drip_log so the hourly dispatcher won't re-send template 2.
+            const supaUrl = Deno.env.get('SUPABASE_URL');
+            const supaKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+            if (supaUrl && supaKey) {
+              await fetch(`${supaUrl}/rest/v1/email_drip_log`, {
+                method: 'POST',
+                headers: {
+                  'apikey': supaKey,
+                  'authorization': `Bearer ${supaKey}`,
+                  'content-type': 'application/json',
+                  'prefer': 'return=minimal',
+                },
+                body: JSON.stringify({
+                  contact_email: body.email.toLowerCase().trim(),
+                  template_id: 2,
+                  day_offset: 0,
+                  brevo_message_id: sendJson?.messageId || null,
+                  status: 'sent',
+                }),
+              }).catch(() => {});
+            }
+          } else {
+            const errTxt = await sendRes.text();
+            console.error('Welcome send failed', sendRes.status, errTxt);
+          }
+        } catch (e) {
+          console.error('Welcome send exception', e);
+        }
+      }
+
+      return new Response(JSON.stringify({ success: true, doubleOptIn: useDoi, welcomeSent }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
