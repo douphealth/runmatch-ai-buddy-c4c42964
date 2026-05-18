@@ -13,13 +13,18 @@ globalThis.fetch = async () => { throw new Error('no fetch'); };
 globalThis.FileReader = dom.window.FileReader;
 globalThis.Blob = dom.window.Blob;
 
+// Monkey-patch via require cache
 const jspdfMod = await import('jspdf');
-const jsPDF = jspdfMod.default || jspdfMod.jsPDF;
-jsPDF.prototype.save = function(name) {
-  const buf = Buffer.from(this.output('arraybuffer'));
-  writeFileSync('/tmp/out.pdf', buf);
-  console.log('SAVED', name, buf.length);
+const ctor = jspdfMod.jsPDF || jspdfMod.default;
+const origSave = ctor.prototype.save;
+ctor.prototype.save = function(name) {
+  try {
+    const buf = Buffer.from(this.output('arraybuffer'));
+    writeFileSync('/tmp/out.pdf', buf);
+    console.log('SAVED', name, buf.length);
+  } catch(e) { console.error('SAVE ERR', e); }
 };
+console.log('patched ctor', ctor.name);
 
 console.log('importing pdf-generator');
 const mod = await import('./src/lib/pdf-generator.ts');
