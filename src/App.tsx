@@ -14,6 +14,7 @@ const RunMatchResult = lazy(() => import("./pages/RunMatchResult.tsx"));
 const CategoryLanding = lazy(() => import("./pages/CategoryLanding.tsx"));
 const BrandLanding = lazy(() => import("./pages/BrandLanding.tsx"));
 const ShoeComparison = lazy(() => import("./pages/ShoeComparison.tsx"));
+const ShoeDetail = lazy(() => import("./pages/ShoeDetail.tsx"));
 const NotFound = lazy(() => import("./pages/NotFound.tsx"));
 
 if (typeof window !== "undefined") captureUTM();
