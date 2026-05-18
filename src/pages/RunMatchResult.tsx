@@ -44,6 +44,7 @@ import TrustBar from '@/components/conversion/TrustBar';
 import Testimonials from '@/components/conversion/Testimonials';
 import LiveActivity from '@/components/conversion/LiveActivity';
 import ExitIntent from '@/components/conversion/ExitIntent';
+import InlineLeadCard from '@/components/conversion/InlineLeadCard';
 import { saveMatch } from '@/lib/saved-matches';
 
 // Resolves a verified direct /dp/ASIN Amazon link via SerpAPI cache,
@@ -583,6 +584,14 @@ const RunMatchResult = () => {
             </div>
           </motion.div>
         )}
+
+        {/* Inline lead capture — non-modal, scroll-revealed, dismissable. */}
+        <InlineLeadCard
+          primaryShoe={primary?.shoe ? `${primary.shoe.brand} ${primary.shoe.model}` : undefined}
+          shoeCategory={primary?.shoe?.category as any}
+          weeklyMileage={answers?.weeklyMileage}
+          injuries={answers?.injuries}
+        />
 
         {/* SECTION 5: Why This Match Works */}
         <motion.div {...fadeUp} transition={{ delay: 0.4 }}>
