@@ -3,6 +3,11 @@ import { ArrowRight, Shield, RotateCcw, Target, ChevronDown, Home } from 'lucide
 import { Button } from '@/components/ui/button';
 import SEOContent from '@/components/SEOContent';
 import { assetPath } from '@/lib/asset-path';
+import TrustBar from '@/components/conversion/TrustBar';
+import Testimonials from '@/components/conversion/Testimonials';
+import LiveActivity from '@/components/conversion/LiveActivity';
+import ExitIntent from '@/components/conversion/ExitIntent';
+import EmailGate from '@/components/EmailGate';
 
 interface QuizHeroProps {
   onStart: () => void;
@@ -166,6 +171,9 @@ const QuizHero = ({ onStart }: QuizHeroProps) => {
               <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
               <span>🎯 100% free</span>
             </div>
+
+            {/* Trust bar — live runner count + verified badges */}
+            <TrustBar className="mt-6 max-w-xl mx-auto" />
           </motion.div>
         </motion.div>
 
