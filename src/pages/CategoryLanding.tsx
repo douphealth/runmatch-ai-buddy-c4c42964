@@ -20,7 +20,7 @@ const CategoryLanding = () => {
   const cat = slug ? getCategory(slug) : undefined;
 
   useEffect(() => {
-    if (cat) trackEvent('category_view', { category: cat.slug });
+    if (cat) track.ctaClick('category_view', cat.slug);
     window.scrollTo(0, 0);
   }, [cat]);
 
