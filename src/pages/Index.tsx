@@ -107,7 +107,7 @@ const Index = () => {
   }, []);
 
   if (currentStep === -1) {
-    return <QuizHero onStart={() => setCurrentStep(0)} />;
+    return <QuizHero onStart={() => { quizStartedAt.current = Date.now(); track.quizStart(); setCurrentStep(0); }} />;
   }
 
   const step = quizSteps[currentStep];
