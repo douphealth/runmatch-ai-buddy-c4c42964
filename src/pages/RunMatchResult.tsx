@@ -168,8 +168,25 @@ const RunMatchResult = () => {
   }, [recommendation, answers, faqs, rotation]);
 
   const handleShare = async () => {
+    const url = window.location.href;
+    const title = document.title || 'My RunMatch AI result';
+    const text = primary?.shoe
+      ? `My RunMatch AI pick: ${primary.shoe.brand} ${primary.shoe.model} — find yours free at GearUpToFit.`
+      : 'I just found my perfect running shoe match with RunMatch AI!';
+
+    // Prefer the native share sheet on mobile / supported browsers; fall
+    // back to clipboard so desktop users still get a working share button.
+    const nav = navigator as Navigator & { share?: (d: ShareData) => Promise<void> };
+    if (typeof nav.share === 'function') {
+      try {
+        await nav.share({ title, text, url });
+        return;
+      } catch {
+        /* user cancelled or share unsupported — fall through to copy */
+      }
+    }
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(url);
       setCopied(true);
       toast.success('Link copied to clipboard!');
       setTimeout(() => setCopied(false), 2000);
@@ -177,6 +194,19 @@ const RunMatchResult = () => {
       toast.error('Failed to copy link');
     }
   };
+
+  // Auto-save the most recent match so returning runners can recall it
+  // from the home page without re-taking the quiz.
+  useEffect(() => {
+    if (!slug || !primary?.shoe) return;
+    saveMatch({
+      slug,
+      url: `/app/runmatch/${slug}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`,
+      label: `${primary.shoe.brand} ${primary.shoe.model}`,
+      subtitle: answers?.distance ? `${answers.distance.replace('-', ' ')} · ${answers.terrain ?? ''}`.trim() : undefined,
+      matchPercent: typeof primary.matchPercent === 'number' ? primary.matchPercent : undefined,
+    });
+  }, [slug, primary, answers, searchParams]);
 
   const runDownload = useCallback(async () => {
     if (!answers || !recommendation || !rotation) return;
