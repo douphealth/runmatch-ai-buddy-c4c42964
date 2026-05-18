@@ -86,6 +86,7 @@ const Index = () => {
       const slug = generateSlug(answers);
       const encoded = encodeAnswers(answers);
       track.quizComplete({ slug, durationMs: quizStartedAt.current ? Date.now() - quizStartedAt.current : 0 });
+      clearProgress();
       navigate(`/app/runmatch/${slug}?d=${encoded}`);
       return prev;
     });
