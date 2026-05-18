@@ -9,6 +9,7 @@ import QuizStepContent from '@/components/quiz/QuizStepContent';
 import QuizNavigation from '@/components/quiz/QuizNavigation';
 import { Brain } from 'lucide-react';
 import { track } from '@/lib/analytics';
+import { saveProgress, loadProgress, clearProgress } from '@/lib/quiz-progress';
 
 const Index = () => {
   const [currentStep, setCurrentStep] = useState(-1);
