@@ -8,6 +8,7 @@ import Testimonials from '@/components/conversion/Testimonials';
 import LiveActivity from '@/components/conversion/LiveActivity';
 import ExitIntent from '@/components/conversion/ExitIntent';
 import EmailGate from '@/components/EmailGate';
+import SavedMatches from '@/components/SavedMatches';
 import { getAllComparisons } from '@/lib/comparisons';
 
 const ComparisonHub = () => {
@@ -219,6 +220,9 @@ const QuizHero = ({ onStart }: QuizHeroProps) => {
         </motion.div>
       </div>
     </main>
+
+    {/* Recall: returning runners see their saved matches first */}
+    <SavedMatches />
 
     {/* Social proof: testimonials below the fold */}
     <section className="relative z-10 px-4 md:px-8 py-14 md:py-20 bg-gradient-to-b from-background to-background/95">

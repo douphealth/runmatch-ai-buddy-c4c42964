@@ -44,6 +44,7 @@ import TrustBar from '@/components/conversion/TrustBar';
 import Testimonials from '@/components/conversion/Testimonials';
 import LiveActivity from '@/components/conversion/LiveActivity';
 import ExitIntent from '@/components/conversion/ExitIntent';
+import { saveMatch } from '@/lib/saved-matches';
 
 // Resolves a verified direct /dp/ASIN Amazon link via SerpAPI cache,
 // keyed by the canonical shoe id. Falls back to brand-filtered search
@@ -167,8 +168,26 @@ const RunMatchResult = () => {
   }, [recommendation, answers, faqs, rotation]);
 
   const handleShare = async () => {
+    const url = window.location.href;
+    const title = document.title || 'My RunMatch AI result';
+    const recPrimary = rotation?.primary;
+    const text = recPrimary?.shoe
+      ? `My RunMatch AI pick: ${recPrimary.shoe.brand} ${recPrimary.shoe.model} — find yours free at GearUpToFit.`
+      : 'I just found my perfect running shoe match with RunMatch AI!';
+
+    // Prefer the native share sheet on mobile / supported browsers; fall
+    // back to clipboard so desktop users still get a working share button.
+    const nav = navigator as Navigator & { share?: (d: ShareData) => Promise<void> };
+    if (typeof nav.share === 'function') {
+      try {
+        await nav.share({ title, text, url });
+        return;
+      } catch {
+        /* user cancelled or share unsupported — fall through to copy */
+      }
+    }
     try {
-      await navigator.clipboard.writeText(window.location.href);
+      await navigator.clipboard.writeText(url);
       setCopied(true);
       toast.success('Link copied to clipboard!');
       setTimeout(() => setCopied(false), 2000);
@@ -176,6 +195,20 @@ const RunMatchResult = () => {
       toast.error('Failed to copy link');
     }
   };
+
+  // Auto-save the most recent match so returning runners can recall it
+  // from the home page without re-taking the quiz.
+  useEffect(() => {
+    const recPrimary = rotation?.primary;
+    if (!slug || !recPrimary?.shoe) return;
+    saveMatch({
+      slug,
+      url: `/app/runmatch/${slug}${searchParams.toString() ? `?${searchParams.toString()}` : ''}`,
+      label: `${recPrimary.shoe.brand} ${recPrimary.shoe.model}`,
+      subtitle: answers?.distance ? `${answers.distance.replace('-', ' ')} · ${answers.terrain ?? ''}`.trim() : undefined,
+      matchPercent: typeof recPrimary.matchPercent === 'number' ? recPrimary.matchPercent : undefined,
+    });
+  }, [slug, rotation, answers, searchParams]);
 
   const runDownload = useCallback(async () => {
     if (!answers || !recommendation || !rotation) return;

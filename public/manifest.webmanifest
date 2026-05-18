@@ -1,0 +1,43 @@
+{
+  "name": "RunMatch AI — Running Shoe Finder",
+  "short_name": "RunMatch AI",
+  "description": "Free AI-powered running shoe finder by GearUpToFit. 9 questions to your perfect shoe match.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0F1217",
+  "theme_color": "#0F1217",
+  "categories": ["health", "fitness", "sports", "shopping"],
+  "lang": "en",
+  "icons": [
+    {
+      "src": "https://gearuptofit.com/wp-content/uploads/2023/03/cropped-Grey-Black-Illustration-Gym-Fitness-Logo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://gearuptofit.com/wp-content/uploads/2023/03/cropped-Grey-Black-Illustration-Gym-Fitness-Logo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Start Quiz",
+      "short_name": "Quiz",
+      "description": "Find your perfect running shoe in 2 minutes",
+      "url": "/"
+    },
+    {
+      "name": "Best Daily Trainers",
+      "url": "/best-running-shoes/daily-trainer"
+    },
+    {
+      "name": "Marathon Shoes",
+      "url": "/best-running-shoes/marathon"
+    }
+  ]
+}
