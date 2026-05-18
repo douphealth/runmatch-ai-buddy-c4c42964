@@ -585,6 +585,14 @@ const RunMatchResult = () => {
           </motion.div>
         )}
 
+        {/* Inline lead capture — non-modal, scroll-revealed, dismissable. */}
+        <InlineLeadCard
+          primaryShoe={primary?.shoe ? `${primary.shoe.brand} ${primary.shoe.model}` : undefined}
+          shoeCategory={primary?.shoe?.category as any}
+          weeklyMileage={answers?.weeklyMileage}
+          injuries={answers?.injuries}
+        />
+
         {/* SECTION 5: Why This Match Works */}
         <motion.div {...fadeUp} transition={{ delay: 0.4 }}>
           <div className="glass rounded-2xl p-5 md:p-8">
