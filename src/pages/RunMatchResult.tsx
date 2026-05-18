@@ -277,7 +277,7 @@ const RunMatchResult = () => {
   const dataPoints = 9;
 
   return (
-    <div className="min-h-screen pb-16 bg-gradient-dark">
+    <div className="min-h-screen pb-32 md:pb-28 bg-gradient-dark">
       {/* Header */}
       <header className="sticky top-0 z-20 glass-strong px-4 py-3">
         <div className="max-w-5xl mx-auto flex items-center justify-between">
