@@ -301,6 +301,26 @@ const QuizHero = ({ onStart, onResume, onRestart }: QuizHeroProps) => {
     {/* Programmatic SEO: head-to-head comparison hub */}
     <ComparisonHub />
 
+    {/* Programmatic SEO: brand hub */}
+    <section className="relative z-10 px-4 md:px-8 py-14 bg-background border-t border-border/40">
+      <div className="max-w-6xl mx-auto">
+        <h2 className="text-2xl md:text-3xl font-display font-bold mb-2">Shop by brand</h2>
+        <p className="text-muted-foreground mb-6">Verified 2026 picks from every major running brand.</p>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+          {BRANDS.map(b => (
+            <a
+              key={b.slug}
+              href={`/best-running-shoes/brand/${b.slug}`}
+              className="group rounded-xl p-4 bg-card/40 border border-border/60 hover:border-primary/40 hover:bg-card/60 transition-all text-center"
+            >
+              <div className="font-semibold group-hover:text-primary transition">{b.name}</div>
+              {b.signature && <div className="text-[10px] text-muted-foreground mt-1 line-clamp-2">{b.signature}</div>}
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
+
     <SEOContent />
 
     {/* FOMO: subtle live-match toasts */}
