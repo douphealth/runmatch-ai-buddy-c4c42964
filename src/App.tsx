@@ -58,6 +58,7 @@ const App = () => (
               <Route path="/best-running-shoes/brand/:brand" element={<BrandLanding />} />
               <Route path="/best-running-shoes/:slug" element={<CategoryLanding />} />
               <Route path="/compare/:slug" element={<ShoeComparison />} />
+              <Route path="/shoes/:id" element={<ShoeDetail />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Suspense>
