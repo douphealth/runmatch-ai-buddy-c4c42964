@@ -48,7 +48,7 @@ const features = [
 const QuizHero = ({ onStart }: QuizHeroProps) => {
   return (
     <>
-    <div className="min-h-screen flex flex-col relative overflow-hidden">
+    <main id="main-content" className="min-h-screen flex flex-col relative overflow-hidden">
       {/* Hero background */}
       <div className="absolute inset-0">
         <img
