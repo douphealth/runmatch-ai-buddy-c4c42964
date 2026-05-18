@@ -739,7 +739,7 @@ export async function generateResultsPDF(data: PDFData) {
     link(doc, M + 8, cy + cardH - 3, 'Read Full Review on GearUpToFit ›', item.shoe.shoe.reviewURL, 5.5);
   });
 
-  y += shoes.length * (cardH + 6) + 6;
+  y += shoes.length * (cardH + cardSpacing) + 4;
 
   // ── Training Emphasis (compact so it always fits below the 3 rotation cards) ──
   const tipCount = Math.min(rec.trainingEmphasis.length, 4);
