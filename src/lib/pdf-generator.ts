@@ -652,7 +652,7 @@ export async function generateResultsPDF(data: PDFData) {
     rotation?.longRun ? { role: 'LONG RUN', color: C.purple, colorBg: C.purpleBg, shoe: rotation.longRun, desc: 'Weekly long run (15K+) with max cushion' } : null,
   ].filter(Boolean) as { role: string; color: RGB; colorBg: RGB; shoe: ScoredShoe; desc: string }[];
 
-  const cardH = 52;
+  const cardH = 56;
   shoes.forEach((item, i) => {
     const cy = y + i * (cardH + 6);
     rr(doc, M, cy, CW, cardH, 3, C.cardBg, C.border);
