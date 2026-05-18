@@ -8,6 +8,7 @@
  */
 import { useEffect, useRef, useState } from 'react';
 import { track } from '@/lib/analytics';
+import { hasSubscribed } from '@/components/EmailGate';
 
 const SESSION_KEY = 'gutf_exit_intent_shown_v1';
 const SUBSCRIBED_KEY = 'gutf_subscribed_v1';
