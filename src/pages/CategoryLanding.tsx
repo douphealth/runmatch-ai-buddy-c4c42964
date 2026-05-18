@@ -171,7 +171,7 @@ const CategoryLanding = () => {
                   href={url}
                   target="_blank"
                   rel="sponsored noopener noreferrer"
-                  onClick={() => trackEvent('affiliate_click', { shoe_id: s.id, source: 'category', category: cat.slug })}
+                  onClick={() => track.affiliateClick({ shoeId: s.id, brand: s.brand, model: s.model, placement: `category-${cat.slug}` })}
                   className="mt-4 flex items-center justify-center gap-2 w-full py-2.5 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition"
                 >
                   Check price on Amazon <ExternalLink className="w-3.5 h-3.5" />
