@@ -1,7 +1,9 @@
 import { writeFileSync } from 'fs';
-import { JSDOM } from 'jsdom';
 
-// Polyfill browser globals for jsPDF
+process.on('unhandledRejection', e => { console.error('UNHANDLED', e); process.exit(1); });
+
+try {
+const { JSDOM } = await import('jsdom');
 const dom = new JSDOM('<!doctype html><html><body></body></html>');
 globalThis.window = dom.window;
 globalThis.document = dom.window.document;
@@ -11,16 +13,17 @@ globalThis.fetch = async () => { throw new Error('no fetch'); };
 globalThis.FileReader = dom.window.FileReader;
 globalThis.Blob = dom.window.Blob;
 
-// Mock jspdf save
-const { default: jsPDF } = await import('jspdf');
-const origSave = jsPDF.prototype.save;
+const jspdfMod = await import('jspdf');
+const jsPDF = jspdfMod.default || jspdfMod.jsPDF;
 jsPDF.prototype.save = function(name) {
   const buf = Buffer.from(this.output('arraybuffer'));
   writeFileSync('/tmp/out.pdf', buf);
-  console.log('saved', name, buf.length);
+  console.log('SAVED', name, buf.length);
 };
 
-const { generateResultsPDF } = await import('/dev-server/src/lib/pdf-generator.ts');
+console.log('importing pdf-generator');
+const mod = await import('./src/lib/pdf-generator.ts');
+console.log('imported', Object.keys(mod));
 
 const shoe = (id, brand, model) => ({
   shoe: { id, brand, model, priceUSD: 165, weightGrams: 258, dropMM: 8, cushioning: 8,
@@ -30,7 +33,7 @@ const shoe = (id, brand, model) => ({
   reasons: ['Matches your neutral pronation and 30 km/week training load perfectly', 'Drop and stack height align with your half-marathon road training goal'],
 });
 
-await generateResultsPDF({
+await mod.generateResultsPDF({
   answers: { footType:'neutral', pronation:'neutral', weeklyMileage:30, distance:'half-marathon',
     terrain:'road', paceGoal:'moderate', injuries:['it-band'], brand:['nike','asics'], budget:['100-150','150-200'] },
   recommendation: {
@@ -52,3 +55,5 @@ await generateResultsPDF({
     {axis:'Durability',value:8},{axis:'Comfort',value:9},{axis:'Value',value:7},
   ],
 });
+console.log('done');
+} catch(e){ console.error('ERR', e); process.exit(1); }
