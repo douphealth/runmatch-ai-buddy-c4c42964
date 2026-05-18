@@ -653,8 +653,9 @@ export async function generateResultsPDF(data: PDFData) {
   ].filter(Boolean) as { role: string; color: RGB; colorBg: RGB; shoe: ScoredShoe; desc: string }[];
 
   const cardH = 56;
+  const cardSpacing = 4;
   shoes.forEach((item, i) => {
-    const cy = y + i * (cardH + 6);
+    const cy = y + i * (cardH + cardSpacing);
     rr(doc, M, cy, CW, cardH, 3, C.cardBg, C.border);
 
     // Left accent
