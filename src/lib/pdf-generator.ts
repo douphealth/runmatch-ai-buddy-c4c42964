@@ -344,6 +344,18 @@ function drawShoeFrame(
 
 export async function generateResultsPDF(data: PDFData) {
   const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+  // ── Fix jsPDF "sticky charSpace" bug ──
+  // jsPDF persists `charSpace` from one text() call to the next, which leaks letter-spacing
+  // into all subsequent calls (causing visible "C ADENCE", "PROGRESS IO N" etc gaps).
+  // Wrap doc.text so charSpace is always reset to 0 after every draw.
+  const _origText = doc.text.bind(doc);
+  (doc as any).text = function (...args: any[]) {
+    const r = _origText(...args);
+    try { (doc as any).setCharSpace(0); } catch {}
+    return r;
+  };
+
   const { answers, recommendation: rec, rotation, radarData } = data;
   const totalPages = 5;
 
