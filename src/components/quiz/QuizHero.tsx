@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Shield, RotateCcw, Target, ChevronDown, Home } from 'lucide-react';
+import { ArrowRight, Shield, RotateCcw, Target, ChevronDown, Home, Clock, X } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import SEOContent from '@/components/SEOContent';
 import { assetPath } from '@/lib/asset-path';
@@ -10,6 +10,9 @@ import ExitIntent from '@/components/conversion/ExitIntent';
 import EmailGate from '@/components/EmailGate';
 import SavedMatches from '@/components/SavedMatches';
 import { getAllComparisons } from '@/lib/comparisons';
+import { BRANDS } from '@/lib/brands';
+import { hasProgress } from '@/lib/quiz-progress';
+import { useEffect, useState } from 'react';
 
 const ComparisonHub = () => {
   const comparisons = getAllComparisons().slice(0, 9);
