@@ -179,12 +179,13 @@ Deno.serve(async (req) => {
             const errTxt = await sendRes.text();
             console.error('Welcome send failed', sendRes.status, errTxt);
           }
+          } // end if (welcomeSkipped) else
         } catch (e) {
           console.error('Welcome send exception', e);
         }
       }
 
-      return new Response(JSON.stringify({ success: true, doubleOptIn: useDoi, welcomeSent }),
+      return new Response(JSON.stringify({ success: true, doubleOptIn: useDoi, welcomeSent, welcomeSkipped }),
         { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } });
     }
 
