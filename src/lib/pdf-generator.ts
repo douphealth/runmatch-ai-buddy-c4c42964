@@ -689,17 +689,20 @@ export async function generateResultsPDF(data: PDFData) {
     const nameLines = doc.splitTextToSize(`${item.shoe.shoe.brand} ${item.shoe.shoe.model}`, textRight - (M + 8));
     doc.text(nameLines.slice(0, 2), M + 8, cy + 18);
 
-    // Price + meta block — show MSRP tier instead of stale hard-coded price
+    // Price + meta block — show MSRP tier instead of stale hard-coded price.
+    // Measure tier width so the spec line never overlaps the price tag.
     const tierLabel2 = (p: number) => p < 110 ? 'BUDGET' : p < 160 ? 'MID' : p < 220 ? 'PREMIUM' : 'SUPER-PREMIUM';
+    const tierStr = tierLabel2(item.shoe.shoe.priceUSD);
     doc.setFontSize(9);
     doc.setTextColor(C.red[0], C.red[1], C.red[2]);
     doc.setFont('helvetica', 'bold');
-    doc.text(tierLabel2(item.shoe.shoe.priceUSD), M + 8, cy + 28);
+    doc.text(tierStr, M + 8, cy + 28);
+    const tierW = doc.getTextWidth(tierStr);
 
     doc.setFontSize(5.8);
     doc.setTextColor(C.textMuted[0], C.textMuted[1], C.textMuted[2]);
     doc.setFont('helvetica', 'normal');
-    doc.text(`${item.shoe.shoe.weightGrams}G   ·   ${item.shoe.shoe.dropMM}MM DROP`, M + 22, cy + 28, { charSpace: 0.4 } as any);
+    doc.text(`${item.shoe.shoe.weightGrams}G   ·   ${item.shoe.shoe.dropMM}MM DROP`, M + 8 + tierW + 5, cy + 28);
 
     // Use-case description on its own line
     doc.setFontSize(6.2);
