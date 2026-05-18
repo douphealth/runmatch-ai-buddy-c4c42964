@@ -107,8 +107,36 @@ const Index = () => {
     });
   }, []);
 
+  // Persist quiz progress to localStorage so users can resume after closing
+  // the tab. Cleared on completion (navigate) and on explicit reset.
+  useEffect(() => {
+    if (currentStep < 0) return;
+    saveProgress({ answers, step: currentStep });
+  }, [answers, currentStep]);
+
+  const handleStart = useCallback(() => {
+    quizStartedAt.current = Date.now();
+    track.quizStart();
+    setCurrentStep(0);
+  }, []);
+
+  const handleResume = useCallback(() => {
+    const p = loadProgress();
+    if (!p) { handleStart(); return; }
+    setAnswers(p.answers);
+    quizStartedAt.current = Date.now();
+    track.quizStart();
+    track.ctaClick('quiz_resume', 'hero');
+    setCurrentStep(Math.min(p.step, quizSteps.length - 1));
+  }, [handleStart]);
+
+  const handleRestart = useCallback(() => {
+    clearProgress();
+    handleStart();
+  }, [handleStart]);
+
   if (currentStep === -1) {
-    return <QuizHero onStart={() => { quizStartedAt.current = Date.now(); track.quizStart(); setCurrentStep(0); }} />;
+    return <QuizHero onStart={handleStart} onResume={handleResume} onRestart={handleRestart} />;
   }
 
   const step = quizSteps[currentStep];
