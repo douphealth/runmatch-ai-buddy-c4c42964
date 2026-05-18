@@ -44,6 +44,7 @@ import TrustBar from '@/components/conversion/TrustBar';
 import Testimonials from '@/components/conversion/Testimonials';
 import LiveActivity from '@/components/conversion/LiveActivity';
 import ExitIntent from '@/components/conversion/ExitIntent';
+import InlineLeadCard from '@/components/conversion/InlineLeadCard';
 import { saveMatch } from '@/lib/saved-matches';
 
 // Resolves a verified direct /dp/ASIN Amazon link via SerpAPI cache,
